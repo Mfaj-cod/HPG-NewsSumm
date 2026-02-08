@@ -207,3 +207,28 @@ This repository provides:
 - A working baseline and other models integration
 - A novel model proposal + prototype
 - A clean foundation for real research work
+
+# Final simple plan (practical + sane)
+### Train (GPU heavy)
+
+PRIMERA
+
+LED
+
+LongT5
+
+Novel
+
+### Prompt only (GPU light)
+
+Flan-T5-XL/XXL
+
+Mistral-7B
+
+LLaMA-3-8B
+
+Qwen-7B
+
+Gemma-9B
+
+Mixtral (if memory allows inference)

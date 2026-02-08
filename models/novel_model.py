@@ -1,7 +1,10 @@
 # This script defines a novel hierarchical planner-generator model for abstractive summarization.
+import torch
 import torch.nn as nn
 from transformers import AutoModel, AutoModelForSeq2SeqLM
 
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.set_float32_matmul_precision("medium")
 
 class DocumentEncoder(nn.Module):
     """
@@ -65,7 +68,7 @@ class SummaryGenerator(nn.Module):
 
 
 class HierarchicalPlannerGenerator(nn.Module):
-    def __init__(self, base_model_name: str, planner_hidden_size: int = None):
+    def __init__(self, base_model_name: str):
         super().__init__()
 
         self.base_model_name = base_model_name
@@ -82,31 +85,28 @@ class HierarchicalPlannerGenerator(nn.Module):
         self.generator = SummaryGenerator(base_model_name)
 
     def forward(self, input_ids, attention_mask, labels=None):
-        """
-        For now, this is a PROTOTYPE forward pass.
 
-        input_ids: (B, T)
-        attention_mask: (B, T)
-        labels: (B, T)
-        """
+        # Encode tokens
+        doc_repr = self.document_encoder(input_ids, attention_mask)   # (B,T,H)
 
-        # 1. Encoding documents (prototype: treat as one big document)
-        doc_repr = self.document_encoder(input_ids, attention_mask)
-        # doc_repr: (B, T, H)
+        # Pool segments -> plan tokens
+        pooled = doc_repr.mean(dim=1, keepdim=True)                   # (B,1,H)
+        plan = self.planner(pooled)                                   # (B,1,H)
 
-        # 2. Pooling to get a single vector per document (prototype)
-        doc_repr_pooled = doc_repr.mean(dim=1, keepdim=True)  # (B, 1, H)
+        # REAL INJECTION
+        # Prepend plan as prefix embedding
+        plan_mask = torch.ones(plan.size()[:2], device=attention_mask.device)
 
-        # 3. Planning over document representations
-        plan = self.planner(doc_repr_pooled)  # (B, 1, H)
+        inputs_embeds = self.generator.model.get_input_embeddings()(input_ids)
 
-        # 4. For prototype: ignoring plan injection and just call generator
-        # (In full version, plan would be injected via cross-attention or prefix tokens)
+        inputs_embeds = torch.cat([plan, inputs_embeds], dim=1)
+        attention_mask = torch.cat([plan_mask, attention_mask], dim=1)
 
-        outputs = self.generator(
-            input_ids=input_ids,
+        outputs = self.generator.model(
+            inputs_embeds=inputs_embeds,
             attention_mask=attention_mask,
-            labels=labels
+            labels=labels,
+            return_dict=True
         )
 
         return {
@@ -115,12 +115,22 @@ class HierarchicalPlannerGenerator(nn.Module):
             "plan": plan
         }
 
+
     def generate(self, input_ids, attention_mask, **gen_kwargs):
-        """
-        Prototype generation method.
-        """
+
+        doc_repr = self.document_encoder(input_ids, attention_mask)
+        pooled = doc_repr.mean(dim=1, keepdim=True)
+        plan = self.planner(pooled)
+
+        plan_mask = torch.ones(plan.size()[:2], device=attention_mask.device)
+
+        inputs_embeds = self.generator.model.get_input_embeddings()(input_ids)
+
+        inputs_embeds = torch.cat([plan, inputs_embeds], dim=1)
+        attention_mask = torch.cat([plan_mask, attention_mask], dim=1)
+
         return self.generator.model.generate(
-            input_ids=input_ids,
+            inputs_embeds=inputs_embeds,
             attention_mask=attention_mask,
             **gen_kwargs
         )

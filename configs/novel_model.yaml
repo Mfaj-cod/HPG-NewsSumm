@@ -3,22 +3,24 @@ experiment:
   output_dir: "results/novel_model_run_001"
 
 data:
-  train_file: "data/newssumm_processed/newssumm_processed.json"
+  # train_file: "data/newssumm_processed/newssumm_processed.json"
+  train_file: /kaggle/input/newssumm-data/newssumm_processed.json
+  # train_file: /content/sample_data/newssumm-data/newssumm_processed.json
   val_split: 0.01
   max_input_length: 512
   max_target_length: 128
 
 model:
-  base_model: "allenai/led-base-16384"
+  base_model: "allenai/PRIMERA"
   family: "led"
   type: "seq2seq"
 
 training:
-  epochs: 1
+  epochs: 10
   batch_size: 1
   learning_rate: 2e-5
   seed: 42
-  gradient_accumulation_steps: 8  # makes effective batch = 8
+  gradient_accumulation_steps: 8
   max_train_samples: 100
 
 system:

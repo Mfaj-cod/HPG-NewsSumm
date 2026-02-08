@@ -1,5 +1,7 @@
 data:
-  train_file: data/newssumm_processed/newssumm_processed.json
+  # train_file: data/newssumm_processed/newssumm_processed.json
+  train_file: /kaggle/input/newssumm-data/newssumm_processed.json
+  # train_file: /content/sample_data/newssumm-data/newssumm_processed.json
   max_input_length: 512
   max_target_length: 64
   val_split: 0.01

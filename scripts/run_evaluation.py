@@ -27,7 +27,6 @@ def main(args):
         data = data[:args.sample]
 
     rouge = hf_evaluate.load("rouge")
-    # bertscore = hf_evaluate.load("bertscore")
 
     predictions = []
     references = []
@@ -96,7 +95,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_dir", required=True)
     parser.add_argument("--data", required=True)
-    parser.add_argument("--sample", type=int, default=None)
+    parser.add_argument("--sample", type=int, default=-1)
     parser.add_argument("--max_input_length", type=int, default=4096)
     parser.add_argument("--max_target_length", type=int, default=256)
     args = parser.parse_args()

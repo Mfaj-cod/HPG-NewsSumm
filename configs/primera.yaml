@@ -1,6 +1,8 @@
 data:
-  train_file: data/newssumm_processed/newssumm_processed.json
-  max_input_length: 4096
+  # train_file: data/newssumm_processed/newssumm_processed.json
+  train_file: /kaggle/input/newssumm-data/newssumm_processed.json
+  # train_file: /content/sample_data/newssumm-data/newssumm_processed.json
+  max_input_length: 1024
   max_target_length: 256
   val_split: 0.01
 
@@ -18,10 +20,10 @@ system:
 
 training:
   seed: 42
-  batch_size: 1          # IMPORTANT
-  grad_accum_steps: 8    # effective batch = 8
+  batch_size: 2         
+  grad_accum_steps: 4 
   learning_rate: 2e-5
   fp16: true
   max_steps: 1000
-  gradient_accumulation_steps: 8  # makes effective batch = 8
+  gradient_accumulation_steps: 4  # makes effective batch = 8
   max_train_samples: 100
