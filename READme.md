@@ -88,6 +88,12 @@ Windows: venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+
+## Set Environment Variable
+```bash
+HF_TOKEN=your_huggingface_token
+```
+
 # 3. Dataset Setup
 ```bash
 Place the dataset file at: data/NewsSumm_Dataset.xlsx
@@ -278,6 +284,11 @@ Step 6 – Evaluate
 ```bash
 python scripts/evaluate.py --run results/<run_name> --sample 10000
 ```
+### For Prompt Based Evaluation
+```bash
+python prompted_eval.py --model google/flan-t5-xl  --data data/newssumm_processed/newsumm_processed.json --sample 10000 --out_dir results/flan_prompt
+```
+
 # 13. Experiment Strategy
 Heavy GPU Training
 
