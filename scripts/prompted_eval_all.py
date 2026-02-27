@@ -168,7 +168,7 @@ def evaluate_model(model_name, sample=None):
     torch.cuda.empty_cache()
 
 
-# AUTO RUN ALL MODELS
+# Auto-run all models
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -178,4 +178,4 @@ if __name__ == "__main__":
     for m in MODELS:
         evaluate_model(m, args.sample)
 
-    print("\n All models finished. Go drink your tea.")
+    print("\n All models finished.")
