@@ -25,20 +25,23 @@ The framework is designed for structured experimentation, comparative benchmarki
 
 ```bash
 data/
-├── raw/
+├── NewsSumm_Dataset.xlsx
 ├── processed/
-└── NewsSumm_Dataset.xlsx
+└── NewsSumm_Cleaned.xlsx
 
 models/
-├── baselines/
+├── baseline_led.py
+├── baseline_generic.py
 └── novel_model.py
 
 scripts/
 ├── clean_dataset.py
 ├── preprocess.py
 ├── compute_stats.py
+├── prompted_eval_all.py
 ├── train_baseline.py
 ├── train_novel.py
+├── utils.py
 └── evaluate.py
 
 configs/
@@ -132,7 +135,7 @@ data/processed/newssumm_processed.json
 Compute dataset diagnostics:
 ```bash
 python scripts/compute_stats.py \
-  --data data/processed/newssumm_processed.json
+--data data/processed/newssumm_processed.json
 ```
 
 Reports:
@@ -265,15 +268,15 @@ python scripts/compute_stats.py --data data/processed/newssumm_processed.json
 ```
 Step 5 – Train Model
 ```bash
-python scripts/train_baseline.py --config configs/led_baseline.yaml
+python scripts/train_baseline.py --config configs/led_baseline.yaml --sample 25000
 ```
 or Train HPG
 ```bash
-python scripts/train_novel.py --config configs/novel_model.yaml
+python scripts/train_novel.py --config configs/novel_model.yaml --sample 25000
 ```
 Step 6 – Evaluate
 ```bash
-python scripts/evaluate.py --run results/<run_name>
+python scripts/evaluate.py --run results/<run_name> --sample 10000
 ```
 # 13. Experiment Strategy
 Heavy GPU Training
