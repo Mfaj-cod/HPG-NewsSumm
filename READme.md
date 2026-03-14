@@ -39,10 +39,10 @@ scripts/
 ├── preprocess.py
 ├── compute_stats.py
 ├── prompted_eval.py
+├── run_evaluation.py
 ├── train_baseline.py
 ├── train_novel.py
-├── utils.py
-└── evaluate.py
+└── utils.py
 
 configs/
 ├── led_baseline.yaml
