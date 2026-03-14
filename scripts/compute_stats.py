@@ -1,5 +1,3 @@
-# This script computes and prints basic statistics about the NewsSumm dataset.
-
 import argparse
 import json
 import numpy as np
@@ -23,7 +21,7 @@ def main(args):
 
         summary_lengths.append(len(summary.split()))
 
-    print("NewsSumm Dataset Statistics -->")
+    print("NewsSumm Dataset Statistics:\n\n")
     print(f"Number of clusters: {len(data)}")
     print(f"Avg documents per cluster: {np.mean(num_docs):.2f}")
     print(f"Avg document length (words): {np.mean(doc_lengths):.2f}")

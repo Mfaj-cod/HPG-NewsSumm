@@ -1,5 +1,4 @@
 # This script preprocesses raw NewsSumm dataset files into a structured JSON format.
-
 import argparse
 import json
 import os
@@ -24,7 +23,6 @@ def clean_text(text: str) -> str:
 
 def main(args):
     os.makedirs(args.output, exist_ok=True)
-
     print("Loading raw dataset...")
 
     # support XLSX or JSON
@@ -36,7 +34,6 @@ def main(args):
         for idx, row in tqdm(df.iterrows(), total=len(df)):
             article = clean_text(str(row.get("article_text", "")))
             summary = clean_text(str(row.get("human_summary", "")))
-
 
             if not article or not summary:
                 continue
@@ -53,11 +50,9 @@ def main(args):
 
                 }
             }
-
             processed.append(sample)
-
     else:
-        raise ValueError("Currently only XLSX demo input is supported in this pipeline.")
+        raise ValueError("Only XLSX input is supported.")
 
     out_path = os.path.join(args.output, "newssumm_processed.json")
     with open(out_path, "w", encoding="utf-8") as f:
@@ -68,7 +63,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=str, required=True, help="Path to raw dataset (xlsx/json)")
+    parser.add_argument("--input", type=str, required=True, help="Path to raw dataset (xlsx or json)")
     parser.add_argument("--output", type=str, required=True, help="Output directory")
 
     args = parser.parse_args()

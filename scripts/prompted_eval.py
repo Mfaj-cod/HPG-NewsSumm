@@ -3,13 +3,11 @@ import json
 import argparse
 from tqdm import tqdm
 from dotenv import load_dotenv
-load_dotenv()
-
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
-
 import evaluate
 
+load_dotenv()
 HF_TOKEN=os.getenv("HF_TOKEN")
 
 # Prompt template
@@ -22,7 +20,6 @@ Articles:
 Summary:
 """
 
-
 # Load model safely (works for both decoder + seq2seq)
 def load_model(model_name):
 
@@ -31,7 +28,6 @@ def load_model(model_name):
 
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-
 
     try:
         model = AutoModelForCausalLM.from_pretrained(
@@ -76,7 +72,6 @@ def generate_summary(texts, tokenizer, model, max_new_tokens=128):
     return tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 
-
 def main(args):
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -96,7 +91,6 @@ def main(args):
 
     preds = []
     refs = []
-
     results = []
 
     for item in tqdm(dataset):
@@ -120,7 +114,7 @@ def main(args):
     with open(os.path.join(args.out_dir, "summaries.json"), "w") as f:
         json.dump(results, f, indent=2)
 
-    # Metrics
+    # metrics
     rouge_scores = rouge.compute(predictions=preds, references=refs)
     bert_scores = bertscore.compute(predictions=preds, references=refs, lang="en")
 
@@ -134,7 +128,7 @@ def main(args):
     with open(os.path.join(args.out_dir, "evaluation.json"), "w") as f:
         json.dump(final_scores, f, indent=2)
 
-    print("\nFinal scores:")
+    print("\nFinal scores:\n")
     print(final_scores)
 
 
