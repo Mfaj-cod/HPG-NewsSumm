@@ -37,6 +37,7 @@ models/
 scripts/
 ├── clean_dataset.py
 ├── preprocess.py
+├── prepare_enhanced_dataset.py
 ├── compute_stats.py
 ├── prompted_eval.py
 ├── run_evaluation.py
@@ -94,6 +95,12 @@ pip install -r requirements.txt
 HF_TOKEN=your_huggingface_token
 ```
 
+## Additional NLP Assets (for enhanced dataset script)
+```bash
+python -m spacy download en_core_web_sm
+python -m nltk.downloader punkt
+```
+
 # 3. Dataset Setup
 ```bash
 Place the dataset file at: data/NewsSumm_Dataset.xlsx
@@ -135,6 +142,33 @@ Generated format:
 Output:
 ```bash
 data/processed/newssumm_processed.json
+```
+
+Enhanced preprocessing (full pipeline with cleaning, dedup, features, embeddings, topics, clustering, and validation):
+```bash
+python scripts/prepare_enhanced_dataset.py \
+  --input data/NewsSumm_Dataset.xlsx \
+  --output_dir data/enhanced \
+  --reports_dir reports
+```
+This step:
+
+- Computes baseline stats on the raw dataset
+- Cleans and normalizes text
+- Filters non-English content
+- Removes duplicates (exact + fuzzy)
+- Adds linguistic and NER features
+- Generates embeddings, topics, and clusters
+- Validates summary quality
+- Writes enhanced dataset + comparison reports
+
+Output:
+```bash
+data/enhanced/newssumm_enhanced.json
+reports/baseline_stats.json
+reports/enhanced_stats.json
+reports/cleaning_log.json
+reports/comparison_table.csv
 ```
 # 6. Dataset Statistics
 

@@ -1,0 +1,76 @@
+# Enhanced Dataset Stats
+
+- total_documents: 306
+- missing_article_ratio: 0.0
+- missing_summary_ratio: 0.0
+- avg_article_length: 384.58496732026146
+- avg_summary_length: 93.47385620915033
+- num_sources: 95
+- source_distribution:
+  - The Times of India: 32
+  - Hindustan Times: 23
+  - The Hindu: 21
+  - The Economic Times: 21
+  - Indian Express: 17
+  - The Pioneer: 12
+  - The Tribune: 10
+  - Financial Express: 10
+  - The Indian Express: 8
+  - Mint: 8
+  - Deccan Chronicle: 6
+  - Hindustan Times : 6
+  - The Asian Age: 5
+  - The New Indian Express: 4
+  - The Pioneer : 4
+  - The Arunachal Times: 4
+  - The Hans India: 4
+  - hindustan times: 4
+  - The Shillong Times: 4
+  - Times of India: 4
+- category_distribution:
+  - Politics: 45
+  - National News: 34
+  - Crime and Justice: 27
+  - Local News: 22
+  - Entertainment: 19
+  - Business and Finance: 19
+  - Sports: 18
+  - International News: 18
+  - Health and Wellness: 17
+  - Education: 11
+  - Technology and Gadgets: 9
+  - Lifestyle and Features: 9
+  - Environment: 9
+  - Opinion and Editorial: 8
+  - Science and Technology: 8
+  - Religion and Spirituality: 6
+  - Human Interest: 5
+  - Miscellaneous: 3
+  - Obituaries: 3
+  - Automotive: 3
+- year_distribution:
+  - 1998: 1
+  - 1999: 1
+  - 2000: 1
+  - 2001: 2
+  - 2002: 1
+  - 2003: 2
+  - 2004: 5
+  - 2005: 4
+  - 2006: 1
+  - 2007: 1
+  - 2008: 5
+  - 2009: 7
+  - 2010: 10
+  - 2011: 11
+  - 2012: 15
+  - 2013: 12
+  - 2014: 10
+  - 2015: 9
+  - 2016: 5
+  - 2017: 10
+- year_min: 1998
+- year_max: 2025
+- duplicate_ratio_exact: 0.0
+- num_clusters: 110
+- sampled: True

@@ -1,0 +1,75 @@
+# Baseline Dataset Stats
+
+- total_documents: 348766
+- missing_article_ratio: 7.741580314594887e-05
+- missing_summary_ratio: 0.0006881404724084343
+- avg_article_length: 333.8746208059272
+- avg_summary_length: 94.60757355934925
+- num_sources: 4532
+- source_distribution:
+  - The Times of India: 33247
+  - The Hindu: 30275
+  - Hindustan Times: 24868
+  - Indian Express: 18365
+  - The Economic Times: 15049
+  - The Tribune: 14075
+  - The Pioneer: 10610
+  - The Indian Express: 7709
+  - Mint: 6586
+  - The Asian Age: 5946
+  - The Arunachal Times: 5846
+  - Times of India: 5470
+  - Financial Express: 5321
+  - Deccan Chronicle: 4987
+  - The Telegraph: 4244
+  - Business Standard: 4182
+  - hindustan times: 4173
+  - The Arunachal Times : 4011
+  - The Times Of India: 3959
+  - The New Indian Express: 3635
+- category_distribution:
+  - Politics: 48797
+  - Business and Finance: 33855
+  - National News: 33012
+  - Local News: 29853
+  - International News: 26443
+  - Crime and Justice: 24418
+  - Sports: 23290
+  - Entertainment: 19898
+  - Health and Wellness: 16434
+  - Education: 13710
+  - Environment: 10211
+  - Science and Technology: 9555
+  - Lifestyle and Features: 7504
+  - Technology and Gadgets: 7282
+  - Opinion and Editorial: 6147
+  - Human Interest: 5851
+  - Miscellaneous: 4882
+  - Weather: 4539
+  - Religion and Spirituality: 4154
+  - Automotive: 2407
+- year_distribution:
+  - 1838.0: 4
+  - 1878.0: 3
+  - 1900.0: 1
+  - 1919.0: 1
+  - 1924.0: 1
+  - 1932.0: 3
+  - 1938.0: 1
+  - 1945.0: 1
+  - 1947.0: 1
+  - 1949.0: 1
+  - 1950.0: 82
+  - 1951.0: 11
+  - 1952.0: 1
+  - 1955.0: 2
+  - 1956.0: 1
+  - 1957.0: 2
+  - 1959.0: 1
+  - 1960.0: 23
+  - 1962.0: 1
+  - 1963.0: 1
+- year_min: 1838
+- year_max: 2104
+- duplicate_ratio_exact: 0.08961309301938836
+- sampled: False

@@ -1,0 +1,36 @@
+{
+  "initial_rows": 500,
+  "after_missing": 499,
+  "noise_removed": 28,
+  "after_noise": 471,
+  "language_removed": 0,
+  "after_language": 471,
+  "exact_dups_removed": 1,
+  "after_exact_dedup": 470,
+  "minhash_dups_removed": 0,
+  "after_minhash_dedup": 470,
+  "tfidf_dups_removed": 0,
+  "after_tfidf_dedup": 470,
+  "cluster_method": "dbscan",
+  "cluster_metrics": {
+    "kmeans": {
+      "silhouette": 0.04052578657865524,
+      "intra_sim": 0.31545811891555786,
+      "inter_dist": 0.8279046416282654
+    },
+    "agglomerative": {
+      "silhouette": -0.04269228130578995,
+      "intra_sim": 0.20098496973514557,
+      "inter_dist": 0.9289491176605225
+    },
+    "dbscan": {
+      "silhouette": 0.05126015841960907,
+      "intra_sim": 0.20824521780014038,
+      "inter_dist": 0.8472654819488525
+    }
+  },
+  "cluster_quality": 0.05126015841960907,
+  "annotation_removed": 164,
+  "after_annotation": 306,
+  "final_rows": 306
+}
