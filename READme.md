@@ -214,30 +214,6 @@ II. Conditional Generation
 - Structured content ordering
 - Coverage-aware loss
 
-## Architecture:
-```bash
-            ┌───────────────────────────────┐
-            │      Input Documents          │
-            └──────────────┬────────────────┘
-                           ▼
-            ┌───────────────────────────────┐
-            │  Shared Encoder (reads docs)  │
-            └──────────────┬────────────────┘
-                           ▼
-            ┌───────────────────────────────┐
-            │   Planner (creates plan)      │
-            │   - summarizes key content    │
-            └──────────────┬────────────────┘
-                           ▼
-            ┌───────────────────────────────┐
-            │  Generator (writes summary)   │
-            │  - guided by the plan         │
-            └──────────────┬────────────────┘
-                           ▼
-            ┌───────────────────────────────┐
-            │           Summary             │
-            └───────────────────────────────┘
-```
 
 ## Train HPG
 ```bash
