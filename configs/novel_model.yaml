@@ -21,7 +21,6 @@ training:
   learning_rate: 2e-5
   seed: 42
   gradient_accumulation_steps: 8
-  max_train_samples: 100
 
 system:
   device: "auto"

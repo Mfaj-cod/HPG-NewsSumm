@@ -1,4 +1,4 @@
-# This script defines a novel hierarchical planner-generator model for abstractive summarization.
+# Novel hierarchical planner-generator [HPG] model for abstractive summarization.
 import torch
 import torch.nn as nn
 from transformers import AutoModel, AutoModelForSeq2SeqLM
@@ -10,7 +10,6 @@ class DocumentEncoder(nn.Module):
     """
     Shared encoder that encodes each document independently.
     """
-
     def __init__(self, base_model_name: str):
         super().__init__()
         self.encoder = AutoModel.from_pretrained(base_model_name)
@@ -27,10 +26,9 @@ class DocumentEncoder(nn.Module):
 
 class ContentPlanner(nn.Module):
     """
-    Lightweight planner that attends over document representations
+    Planner that attends over document representations
     and produces a plan representation.
     """
-
     def __init__(self, hidden_size: int):
         super().__init__()
         self.attention = nn.MultiheadAttention(hidden_size, num_heads=8, batch_first=True)
@@ -52,7 +50,6 @@ class SummaryGenerator(nn.Module):
     """
     Abstractive generator conditioned on document encodings and plan.
     """
-
     def __init__(self, base_model_name: str):
         super().__init__()
         self.model = AutoModelForSeq2SeqLM.from_pretrained(base_model_name)
@@ -74,12 +71,9 @@ class HierarchicalPlannerGenerator(nn.Module):
         self.base_model_name = base_model_name
         self.document_encoder = DocumentEncoder(base_model_name)
 
-        # Get true size from model config (e.g., 768 for LED)
         hidden_size = self.document_encoder.encoder.config.hidden_size
-
         print(f"[HPG] Using size from backbone: {hidden_size}")
 
-        # Planner always matches backbone dimension
         self.planner = ContentPlanner(hidden_size)
         self.generator = SummaryGenerator(base_model_name)
 

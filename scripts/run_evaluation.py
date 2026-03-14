@@ -40,7 +40,6 @@ def main(args):
             return_tensors="pt"
         ).to(device)
 
-
         with torch.no_grad():
             summary_ids = model.generate(
                 **inputs,
@@ -67,19 +66,18 @@ def main(args):
             references=references,
             lang="en"
         )
-        bert_f1 = sum(bert_scores["f1"]) / len(bert_scores["f1"])
     except Exception as e:
         print("BERTScore failed:", e)
-        bert_f1 = 0.0
+        bert_scores = None
 
     results = {
         "rouge1": rouge_scores["rouge1"],
         "rouge2": rouge_scores["rouge2"],
         "rougeL": rouge_scores["rougeL"],
-        "bertscore": sum(bert_scores["f1"]) / len(bert_scores["f1"])
+        "bertscore": sum(bert_scores["f1"]) / len(bert_scores["f1"]) if bert_scores else None
     }
 
-    print("\nEvaluation results:")
+    print("\nEvaluation results:\n")
     for k, v in results.items():
         print(f"{k}: {v:.4f}")
 
@@ -87,7 +85,7 @@ def main(args):
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
 
-    print(f"\nSaved evaluation to: {out_path}")
+    print(f"\nSaved evaluation to: {out_path}\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

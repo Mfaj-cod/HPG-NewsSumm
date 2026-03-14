@@ -124,7 +124,6 @@ def main(args):
 
     print("Novel training complete.")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)

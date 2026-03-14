@@ -1,5 +1,3 @@
-# This script trains a model on a single sample from the NewsSumm dataset.
-
 import os
 import json
 import yaml

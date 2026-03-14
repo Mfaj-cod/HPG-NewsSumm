@@ -20,10 +20,10 @@ system:
 
 training:
   seed: 42
-  batch_size: 2         
+  batch_size: 2
+  epochs: 10       
   grad_accum_steps: 4 
   learning_rate: 2e-5
   fp16: true
   max_steps: 1000
-  gradient_accumulation_steps: 4  # makes effective batch = 8
-  max_train_samples: 100
+  gradient_accumulation_steps: 4

@@ -1,5 +1,3 @@
-# This script contains utility functions for experiment setup and management.
-
 import os
 import json
 import time
