@@ -92,8 +92,8 @@ def main(args):
     )
 
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-    optimizer = AdamW(model.parameters(), lr=3e-5)
+    lr=config["training"]["learning_rate"]
+    optimizer = AdamW(model.parameters(), lr=lr)
     scaler = torch.cuda.amp.GradScaler(enabled=fp16)
 
     model.train()
