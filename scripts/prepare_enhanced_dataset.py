@@ -124,9 +124,9 @@ def word_count(text: str) -> int:
     return len(text.split())
 
 
-def compute_basic_stats(df: pd.DataFrame, cols: dict, cluster_col=None) -> dict:
-    article_col = cols["article_text"]
-    summary_col = cols["human_summary"]
+def compute_basic_stats(df: pd.DataFrame, cols: dict, cluster_col=None, article_col_override=None, summary_col_override=None) -> dict:
+    article_col = article_col_override or cols["article_text"]
+    summary_col = summary_col_override or cols["human_summary"]
     source_col = cols.get("newspaper_name")
     category_col = cols.get("news_category")
     date_col = cols.get("published_date")
@@ -142,6 +142,8 @@ def compute_basic_stats(df: pd.DataFrame, cols: dict, cluster_col=None) -> dict:
 
     stats["avg_article_length"] = float(article_lengths.mean()) if len(df) else 0.0
     stats["avg_summary_length"] = float(summary_lengths.mean()) if len(df) else 0.0
+    stats["total_article_tokens"] = int(article_lengths.sum()) if len(df) else 0
+    stats["total_summary_tokens"] = int(summary_lengths.sum()) if len(df) else 0
 
     if source_col:
         stats["num_sources"] = int(df[source_col].nunique(dropna=True))
@@ -180,7 +182,7 @@ def save_report_json(path: str, payload: dict):
 
 def save_report_md(path: str, title: str, payload: dict):
     lines = [f"# {title}", ""]
-    for k, v in payload.items():
+    for k, v in payload.items(): 
         if isinstance(v, dict):
             lines.append(f"- {k}:")
             for kk, vv in list(v.items())[:20]:
@@ -301,6 +303,14 @@ def tfidf_dedup(texts, candidates, threshold=0.95, max_features=50000):
     return keep
 
 
+def build_tfidf_features(texts, max_features=50000):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    vectorizer = TfidfVectorizer(max_features=max_features, ngram_range=(1, 2))
+    X = vectorizer.fit_transform(texts)
+    return X
+
+
 def ensure_nltk():
     import nltk
     try:
@@ -375,64 +385,6 @@ def add_ner_features(df, text_col):
     return df
 
 
-def chunk_text(text: str, max_words: int = 200):
-    words = text.split()
-    if len(words) <= max_words:
-        return [text]
-    chunks = []
-    for i in range(0, len(words), max_words):
-        chunk = " ".join(words[i:i + max_words])
-        chunks.append(chunk)
-    return chunks
-
-
-def compute_embeddings(texts, model_name, batch_size=32):
-    try:
-        from sentence_transformers import SentenceTransformer
-    except Exception as e:
-        raise RuntimeError("sentence-transformers is required for embeddings") from e
-
-    model = SentenceTransformer(model_name)
-    embeddings = []
-
-    for text in tqdm(texts, desc="Embeddings"):
-        chunks = chunk_text(text)
-        emb = model.encode(chunks, batch_size=batch_size, convert_to_numpy=True, show_progress_bar=False)
-        emb = np.mean(emb, axis=0)
-        embeddings.append(emb)
-
-    return np.vstack(embeddings)
-
-
-def run_topic_modeling(texts, embeddings):
-    try:
-        from bertopic import BERTopic
-    except Exception as e:
-        raise RuntimeError("bertopic is required for topic modeling") from e
-
-    topic_model = BERTopic(verbose=False)
-    topics, probs = topic_model.fit_transform(texts, embeddings)
-
-    topic_probs = []
-    if probs is None:
-        topic_probs = [0.0] * len(topics)
-    else:
-        probs_arr = np.array(probs)
-        if probs_arr.ndim == 1:
-            for i, t in enumerate(topics):
-                topic_probs.append(float(probs_arr[i]) if t != -1 else 0.0)
-        elif probs_arr.ndim == 2:
-            for i, t in enumerate(topics):
-                if t == -1 or t >= probs_arr.shape[1]:
-                    topic_probs.append(0.0)
-                else:
-                    topic_probs.append(float(probs_arr[i, t]))
-        else:
-            topic_probs = [0.0] * len(topics)
-
-    return topics, topic_probs, topic_model
-
-
 def cluster_quality_metrics(embeddings, labels, sample_size=2000):
     from sklearn.metrics import silhouette_score
     from sklearn.metrics.pairwise import cosine_similarity
@@ -471,26 +423,46 @@ def cluster_quality_metrics(embeddings, labels, sample_size=2000):
     return {"silhouette": sil, "intra_sim": intra_sim, "inter_dist": inter_dist}
 
 
-def run_clustering(embeddings, seed=42, kmeans_k=None, dbscan_eps=0.5, dbscan_min_samples=5):
-    from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+def run_clustering(
+    embeddings,
+    seed=42,
+    kmeans_k=None,
+    dbscan_eps=0.5,
+    dbscan_min_samples=5,
+    max_agglomerative=50000,
+    max_dbscan=50000,
+    max_clusters=30,
+):
+    from sklearn.cluster import KMeans, MiniBatchKMeans, AgglomerativeClustering, DBSCAN
+    from scipy import sparse
 
     n = embeddings.shape[0]
     if kmeans_k is None:
-        kmeans_k = max(2, min(100, int(np.sqrt(n))))
+        kmeans_k = max(2, min(max_clusters, int(np.sqrt(n))))
+    else:
+        kmeans_k = max(2, min(max_clusters, kmeans_k))
 
     results = {}
 
-    km = KMeans(n_clusters=kmeans_k, random_state=seed, n_init="auto")
+    is_sparse = sparse.issparse(embeddings)
+
+    # Use MiniBatchKMeans for large datasets or sparse features
+    if n > 50000 or is_sparse:
+        km = MiniBatchKMeans(n_clusters=kmeans_k, random_state=seed, batch_size=2048, n_init="auto")
+    else:
+        km = KMeans(n_clusters=kmeans_k, random_state=seed, n_init="auto")
     labels_km = km.fit_predict(embeddings)
     results["kmeans"] = {"labels": labels_km, "metrics": cluster_quality_metrics(embeddings, labels_km)}
 
-    agg = AgglomerativeClustering(n_clusters=kmeans_k, linkage="average")
-    labels_ag = agg.fit_predict(embeddings)
-    results["agglomerative"] = {"labels": labels_ag, "metrics": cluster_quality_metrics(embeddings, labels_ag)}
+    if n <= max_agglomerative and not is_sparse:
+        agg = AgglomerativeClustering(n_clusters=kmeans_k, linkage="average")
+        labels_ag = agg.fit_predict(embeddings)
+        results["agglomerative"] = {"labels": labels_ag, "metrics": cluster_quality_metrics(embeddings, labels_ag)}
 
-    db = DBSCAN(eps=dbscan_eps, min_samples=dbscan_min_samples, metric="cosine")
-    labels_db = db.fit_predict(embeddings)
-    results["dbscan"] = {"labels": labels_db, "metrics": cluster_quality_metrics(embeddings, labels_db)}
+    if n <= max_dbscan and not is_sparse:
+        db = DBSCAN(eps=dbscan_eps, min_samples=dbscan_min_samples, metric="cosine")
+        labels_db = db.fit_predict(embeddings)
+        results["dbscan"] = {"labels": labels_db, "metrics": cluster_quality_metrics(embeddings, labels_db)}
 
     # Choose best by silhouette score
     best = None
@@ -615,8 +587,6 @@ def main():
     parser.add_argument("--input", default="data/NewsSumm_Dataset.xlsx")
     parser.add_argument("--output_dir", default="data/enhanced")
     parser.add_argument("--reports_dir", default="reports") 
-    parser.add_argument("--embedding_model", default="sentence-transformers/all-MiniLM-L6-v2")
-    parser.add_argument("--topic_model", default="bertopic")
     parser.add_argument("--minhash_threshold", type=float, default=0.9)
     parser.add_argument("--cosine_threshold", type=float, default=0.95)
     parser.add_argument("--lang", default="en")
@@ -629,7 +599,6 @@ def main():
     parser.add_argument("--summary_max_ratio", type=float, default=0.5)
     parser.add_argument("--summary_min_overlap", type=float, default=0.2)
     parser.add_argument("--summary_min_rougeL", type=float, default=0.1)
-    parser.add_argument("--skip_embeddings", action="store_true")
     parser.add_argument("--skip_topics", action="store_true")
     parser.add_argument("--skip_clustering", action="store_true")
     parser.add_argument("--skip_annotation_validation", action="store_true")
@@ -639,6 +608,10 @@ def main():
     parser.add_argument("--kmeans_k", type=int, default=None)
     parser.add_argument("--dbscan_eps", type=float, default=0.5)
     parser.add_argument("--dbscan_min_samples", type=int, default=5)
+    parser.add_argument("--max_agglomerative", type=int, default=50000)
+    parser.add_argument("--max_dbscan", type=int, default=50000)
+    parser.add_argument("--max_clusters", type=int, default=30)
+    parser.add_argument("--cluster_tfidf_max_features", type=int, default=50000)
 
     # Column overrides
     parser.add_argument("--col_article_text", default=None)
@@ -739,37 +712,30 @@ def main():
     else:
         df = add_ner_features(df, "article_clean")
 
-    # Embeddings
-    embeddings = None
-    save_embeddings = not args.skip_embeddings
-    emb_path = None
-    if not args.skip_embeddings:
-        embeddings = compute_embeddings(df["article_clean"].tolist(), args.embedding_model)
-        emb_path = os.path.join(args.output_dir, "embeddings.npy")
+    # Topic modeling (skipped)
+    df["topic_id"] = -1
+    df["topic_prob"] = 0.0
 
-    # Topic modeling
-    if not args.skip_topics:
-        if args.topic_model.lower() != "bertopic":
-            raise ValueError("Only topic_model='bertopic' is supported")
-        if embeddings is None:
-            embeddings = compute_embeddings(df["article_clean"].tolist(), args.embedding_model)
-        topics, topic_probs, _ = run_topic_modeling(df["article_clean"].tolist(), embeddings)
-        df["topic_id"] = topics
-        df["topic_prob"] = topic_probs
+    # Clustering (TF-IDF based, capped at max_clusters)
+    if args.skip_clustering:
+        df["cluster_label"] = np.arange(len(df))
+        cleaning_log["cluster_method"] = "none"
+        cleaning_log["cluster_metrics"] = {}
+        cleaning_log["cluster_quality"] = -1.0
     else:
-        df["topic_id"] = -1
-        df["topic_prob"] = 0.0
-
-    # Clustering
-    if not args.skip_clustering:
-        if embeddings is None:
-            embeddings = compute_embeddings(df["article_clean"].tolist(), args.embedding_model)
+        tfidf_features = build_tfidf_features(
+            df["article_clean"].tolist(),
+            max_features=args.cluster_tfidf_max_features,
+        )
         best, all_results = run_clustering(
-            embeddings,
+            tfidf_features,
             seed=42,
             kmeans_k=args.kmeans_k,
             dbscan_eps=args.dbscan_eps,
             dbscan_min_samples=args.dbscan_min_samples,
+            max_agglomerative=args.max_agglomerative,
+            max_dbscan=args.max_dbscan,
+            max_clusters=args.max_clusters,
         )
         cluster_labels = all_results[best]["labels"]
         df["cluster_label"] = cluster_labels
@@ -777,11 +743,6 @@ def main():
         cleaning_log["cluster_method"] = best
         cleaning_log["cluster_metrics"] = cluster_metrics
         cleaning_log["cluster_quality"] = cluster_metrics[best]["silhouette"] if best else -1.0
-    else:
-        df["cluster_label"] = np.arange(len(df))
-        cleaning_log["cluster_method"] = "none"
-        cleaning_log["cluster_metrics"] = {}
-        cleaning_log["cluster_quality"] = -1.0
 
     # Normalize cluster ids
     cluster_ids = []
@@ -819,22 +780,10 @@ def main():
         cleaning_log["annotation_removed"] = 0
         cleaning_log["after_annotation"] = int(len(df))
 
-    # Align embeddings after annotation filtering
-    if embeddings is not None and keep_ann is not None:
-        embeddings = embeddings[keep_ann]
-
     # Assign ids after final filtering
     df["doc_id"] = np.arange(len(df))
 
-    if save_embeddings and embeddings is not None:
-        df["embedding_index"] = np.arange(len(df))
-        np.save(emb_path, embeddings)
-        save_report_json(os.path.join(args.output_dir, "embeddings_index.json"), {
-            "embedding_file": emb_path,
-            "doc_id": df["doc_id"].tolist(),
-        })
-    else:
-        df["embedding_index"] = -1
+    df["embedding_index"] = -1
 
     cleaning_log["final_rows"] = int(len(df))
     save_report_json(os.path.join(args.reports_dir, "cleaning_log.json"), cleaning_log)
@@ -851,7 +800,12 @@ def main():
         df.to_excel(os.path.join(args.output_dir, "enhanced_flat.xlsx"), index=False)
 
     # Enhanced stats and comparison
-    enhanced_stats = compute_basic_stats(df, cols, cluster_col="cluster_id")
+    enhanced_stats = compute_basic_stats(
+        df,
+        cols,
+        cluster_col="cluster_id",
+        article_col_override="article_clean",
+    )
     enhanced_stats["sampled"] = bool(args.sample)
     save_report_json(os.path.join(args.reports_dir, "enhanced_stats.json"), enhanced_stats)
     save_report_md(os.path.join(args.reports_dir, "enhanced_stats.md"), "Enhanced Dataset Stats", enhanced_stats)
@@ -863,6 +817,8 @@ def main():
         "Sources": [baseline_stats.get("num_sources", 0), enhanced_stats.get("num_sources", 0)],
         "Avg Article Length": [baseline_stats.get("avg_article_length", 0), enhanced_stats.get("avg_article_length", 0)],
         "Avg Summary Length": [baseline_stats.get("avg_summary_length", 0), enhanced_stats.get("avg_summary_length", 0)],
+        "Total Article Tokens": [baseline_stats.get("total_article_tokens", 0), enhanced_stats.get("total_article_tokens", 0)],
+        "Total Summary Tokens": [baseline_stats.get("total_summary_tokens", 0), enhanced_stats.get("total_summary_tokens", 0)],
         "Duplicate Rate": [baseline_stats.get("duplicate_ratio_exact", 0), enhanced_stats.get("duplicate_ratio_exact", 0)],
         "Noise Percentage": [noise_pct, 0.0],
         "Cluster Quality Score": [np.nan, cleaning_log.get("cluster_quality", np.nan)],
