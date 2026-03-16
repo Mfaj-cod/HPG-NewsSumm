@@ -5,6 +5,10 @@
 - missing_summary_ratio: 0.0
 - avg_article_length: 388.4994802579662
 - avg_summary_length: 94.46021932569593
+- Number of clusters: 28
+- Avg documents per cluster: 6562.32
+- Avg document length (words): 388.50
+- Avg summary length (words): 131.75
 - total_article_tokens: 71384837
 - total_summary_tokens: 17356593
 - num_sources: 2817
@@ -50,29 +54,6 @@
   - Weather: 2087
   - Miscellaneous: 1973
   - Automotive: 1302
-- year_distribution:
-  - 1878.0: 1
-  - 1900.0: 1
-  - 1919.0: 1
-  - 1932.0: 1
-  - 1945.0: 1
-  - 1950.0: 32
-  - 1951.0: 7
-  - 1952.0: 1
-  - 1955.0: 1
-  - 1957.0: 1
-  - 1959.0: 1
-  - 1960.0: 2
-  - 1963.0: 1
-  - 1965.0: 9
-  - 1966.0: 1
-  - 1967.0: 2
-  - 1968.0: 1
-  - 1969.0: 5
-  - 1970.0: 4
-  - 1971.0: 2
-- year_min: 1878
-- year_max: 2104
+
 - duplicate_ratio_exact: 0.0
 - num_clusters: 28
-- sampled: False
