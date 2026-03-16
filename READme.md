@@ -162,7 +162,7 @@ reports/comparison_table.csv
 Compute dataset diagnostics:
 ```bash
 python scripts/compute_stats.py \
---data data/processed/newssumm_processed.json
+--data data/enhanced/newssumm_enhanced.json
 ```
 
 Reports:
