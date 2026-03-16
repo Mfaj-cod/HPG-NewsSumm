@@ -124,27 +124,8 @@ data/NewsSumm_Cleaned.xlsx
 ```
 
 # 5. Preprocessing Pipeline
-Convert cleaned Excel data into structured JSON clusters:
-```bash
-python scripts/preprocess.py \
-  --input data/NewsSumm_Cleaned.xlsx \
-  --output data/processed
-```
-Generated format:
-```bash
-{
-  "cluster_id": "...",
-  "documents": ["doc1", "doc2", "..."],
-  "summary": "...",
-  "metadata": {...}
-}
-```
-Output:
-```bash
-data/processed/newssumm_processed.json
-```
-
-Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation):
+- Convert raw Excel data into structured JSON clusters.
+- Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation).
 ```bash
 python scripts/prepare_enhanced_dataset.py \
   --input data/NewsSumm_Dataset.xlsx \
