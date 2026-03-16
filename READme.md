@@ -37,8 +37,8 @@ models/
 scripts/
 ├── clean_dataset.py
 ├── preprocess.py
-├── prepare_enhanced_dataset.py
 ├── compute_stats.py
+├── prepare_and_compute.py
 ├── prompted_eval.py
 ├── run_evaluation.py
 ├── train_baseline.py
@@ -144,7 +144,7 @@ Output:
 data/processed/newssumm_processed.json
 ```
 
-Enhanced preprocessing (full pipeline with cleaning, dedup, features, embeddings, topics, clustering, and validation):
+Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation):
 ```bash
 python scripts/prepare_enhanced_dataset.py \
   --input data/NewsSumm_Dataset.xlsx \
@@ -158,7 +158,7 @@ This step:
 - Filters non-English content
 - Removes duplicates (exact + fuzzy)
 - Adds linguistic and NER features
-- Generates embeddings, topics, and clusters
+- Generates topics and clusters
 - Validates summary quality
 - Writes enhanced dataset + comparison reports
 
