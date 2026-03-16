@@ -1,36 +1,26 @@
 {
-  "initial_rows": 500,
-  "after_missing": 499,
-  "noise_removed": 28,
-  "after_noise": 471,
-  "language_removed": 0,
-  "after_language": 471,
-  "exact_dups_removed": 1,
-  "after_exact_dedup": 470,
-  "minhash_dups_removed": 0,
-  "after_minhash_dedup": 470,
-  "tfidf_dups_removed": 0,
-  "after_tfidf_dedup": 470,
-  "cluster_method": "dbscan",
+  "initial_rows": 348766,
+  "after_missing": 348502,
+  "noise_removed": 20707,
+  "after_noise": 327795,
+  "language_removed": 165,
+  "after_language": 327630,
+  "exact_dups_removed": 36245,
+  "after_exact_dedup": 291385,
+  "minhash_dups_removed": 11363,
+  "after_minhash_dedup": 280022,
+  "tfidf_dups_removed": 279,
+  "after_tfidf_dedup": 279743,
+  "cluster_method": "kmeans",
   "cluster_metrics": {
     "kmeans": {
-      "silhouette": 0.04052578657865524,
-      "intra_sim": 0.31545811891555786,
-      "inter_dist": 0.8279046416282654
-    },
-    "agglomerative": {
-      "silhouette": -0.04269228130578995,
-      "intra_sim": 0.20098496973514557,
-      "inter_dist": 0.9289491176605225
-    },
-    "dbscan": {
-      "silhouette": 0.05126015841960907,
-      "intra_sim": 0.20824521780014038,
-      "inter_dist": 0.8472654819488525
+      "silhouette": -0.0014362691747059496,
+      "intra_sim": 0.07170280537865921,
+      "inter_dist": 0.9311167301788089
     }
   },
-  "cluster_quality": 0.05126015841960907,
-  "annotation_removed": 164,
-  "after_annotation": 306,
-  "final_rows": 306
+  "cluster_quality": -0.0014362691747059496,
+  "annotation_removed": 95998,
+  "after_annotation": 183745,
+  "final_rows": 183745
 }

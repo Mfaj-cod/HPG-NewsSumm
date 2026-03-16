@@ -1,76 +1,78 @@
 # Enhanced Dataset Stats
 
-- total_documents: 306
+- total_documents: 183745
 - missing_article_ratio: 0.0
 - missing_summary_ratio: 0.0
-- avg_article_length: 384.58496732026146
-- avg_summary_length: 93.47385620915033
-- num_sources: 95
+- avg_article_length: 388.4994802579662
+- avg_summary_length: 94.46021932569593
+- total_article_tokens: 71384837
+- total_summary_tokens: 17356593
+- num_sources: 2817
 - source_distribution:
-  - The Times of India: 32
-  - Hindustan Times: 23
-  - The Hindu: 21
-  - The Economic Times: 21
-  - Indian Express: 17
-  - The Pioneer: 12
-  - The Tribune: 10
-  - Financial Express: 10
-  - The Indian Express: 8
-  - Mint: 8
-  - Deccan Chronicle: 6
-  - Hindustan Times : 6
-  - The Asian Age: 5
-  - The New Indian Express: 4
-  - The Pioneer : 4
-  - The Arunachal Times: 4
-  - The Hans India: 4
-  - hindustan times: 4
-  - The Shillong Times: 4
-  - Times of India: 4
+  - The Times of India: 21777
+  - The Hindu: 13378
+  - Hindustan Times: 13327
+  - Indian Express: 9567
+  - The Economic Times: 9317
+  - The Tribune: 8332
+  - The Pioneer: 5666
+  - The Indian Express: 4155
+  - Mint: 4104
+  - Times of India: 3170
+  - The Asian Age: 3142
+  - The Arunachal Times: 2778
+  - Deccan Chronicle: 2771
+  - Financial Express: 2639
+  - The Times Of India: 2548
+  - Business Standard: 2345
+  - The Telegraph: 2319
+  - The New Indian Express: 2061
+  - The Arunachal Times : 2025
+  - The Morung Express: 1852
 - category_distribution:
-  - Politics: 45
-  - National News: 34
-  - Crime and Justice: 27
-  - Local News: 22
-  - Entertainment: 19
-  - Business and Finance: 19
-  - Sports: 18
-  - International News: 18
-  - Health and Wellness: 17
-  - Education: 11
-  - Technology and Gadgets: 9
-  - Lifestyle and Features: 9
-  - Environment: 9
-  - Opinion and Editorial: 8
-  - Science and Technology: 8
-  - Religion and Spirituality: 6
-  - Human Interest: 5
-  - Miscellaneous: 3
-  - Obituaries: 3
-  - Automotive: 3
+  - Politics: 26285
+  - National News: 17748
+  - Business and Finance: 17728
+  - Local News: 14488
+  - International News: 14371
+  - Crime and Justice: 13192
+  - Sports: 12751
+  - Entertainment: 11006
+  - Health and Wellness: 8785
+  - Education: 7065
+  - Science and Technology: 5318
+  - Environment: 5093
+  - Lifestyle and Features: 4264
+  - Technology and Gadgets: 3701
+  - Opinion and Editorial: 3434
+  - Human Interest: 2978
+  - Religion and Spirituality: 2208
+  - Weather: 2087
+  - Miscellaneous: 1973
+  - Automotive: 1302
 - year_distribution:
-  - 1998: 1
-  - 1999: 1
-  - 2000: 1
-  - 2001: 2
-  - 2002: 1
-  - 2003: 2
-  - 2004: 5
-  - 2005: 4
-  - 2006: 1
-  - 2007: 1
-  - 2008: 5
-  - 2009: 7
-  - 2010: 10
-  - 2011: 11
-  - 2012: 15
-  - 2013: 12
-  - 2014: 10
-  - 2015: 9
-  - 2016: 5
-  - 2017: 10
-- year_min: 1998
-- year_max: 2025
+  - 1878.0: 1
+  - 1900.0: 1
+  - 1919.0: 1
+  - 1932.0: 1
+  - 1945.0: 1
+  - 1950.0: 32
+  - 1951.0: 7
+  - 1952.0: 1
+  - 1955.0: 1
+  - 1957.0: 1
+  - 1959.0: 1
+  - 1960.0: 2
+  - 1963.0: 1
+  - 1965.0: 9
+  - 1966.0: 1
+  - 1967.0: 2
+  - 1968.0: 1
+  - 1969.0: 5
+  - 1970.0: 4
+  - 1971.0: 2
+- year_min: 1878
+- year_max: 2104
 - duplicate_ratio_exact: 0.0
-- num_clusters: 110
-- sampled: True
+- num_clusters: 28
+- sampled: False

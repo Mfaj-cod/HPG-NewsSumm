@@ -1,3 +1,3 @@
-,Articles,Clusters,Sources,Avg Article Length,Avg Summary Length,Duplicate Rate,Noise Percentage,Cluster Quality Score,Temporal Coverage
-Original,500,0,136,313.926,93.08,0.006,0.056,,1982-2025
-Enhanced,306,110,95,384.58496732026146,93.47385620915033,0.0,0.0,0.05126015841960907,1998-2025
+,Articles,Clusters,Sources,Avg Article Length,Avg Summary Length,Total Article Tokens,Total Summary Tokens,Duplicate Rate,Noise Percentage,Cluster Quality Score,Temporal Coverage
+Original,348766,0,4532,333.8746208059272,94.60757355934925,116444116,32995905,0.08961309301938836,0.05937218650900604,,1838-2104
+Enhanced,183745,28,2817,388.4994802579662,94.46021932569593,71384837,17356593,0.0,0.0,-0.0014362691747059496,1878-2104
