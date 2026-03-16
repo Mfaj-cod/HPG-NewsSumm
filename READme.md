@@ -106,9 +106,15 @@ python -m nltk.downloader punkt
 Place the dataset file at: data/NewsSumm_Dataset.xlsx
 ```
 # 4. Data Cleaning Pipeline
+Input:
 ```bash
 data/NewsSumm_Dataset.xlsx
 ```
+run:
+```bash
+python -m scripts/clean_dataset.py
+```
+
 This step:
 
 - Removes missing article or summary rows
