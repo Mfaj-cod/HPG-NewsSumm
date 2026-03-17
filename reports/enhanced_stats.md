@@ -13,7 +13,7 @@
 - total_summary_tokens: 17356593
 - num_sources: 2817
 - source_distribution:
-  - The Times of India: 21777
+  - The Times of India: 27495
   - The Hindu: 13378
   - Hindustan Times: 13327
   - Indian Express: 9567
@@ -22,12 +22,10 @@
   - The Pioneer: 5666
   - The Indian Express: 4155
   - Mint: 4104
-  - Times of India: 3170
   - The Asian Age: 3142
   - The Arunachal Times: 2778
   - Deccan Chronicle: 2771
   - Financial Express: 2639
-  - The Times Of India: 2548
   - Business Standard: 2345
   - The Telegraph: 2319
   - The New Indian Express: 2061
