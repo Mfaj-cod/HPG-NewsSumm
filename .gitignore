@@ -35,8 +35,7 @@ Thumbs.db
 **/*.pth
 
 # Large Data Files
-data/newssumm_processed/
-data/enhanced/
+data/enhanced/*.json
 data/*.xlsx
 data/*.csv
 data/*.json

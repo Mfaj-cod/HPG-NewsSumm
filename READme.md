@@ -133,7 +133,7 @@ data/NewsSumm_Cleaned.xlsx
 - Convert raw Excel data into structured JSON clusters.
 - Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation).
 ```bash
-python scripts/prepare_enhanced_dataset.py \
+python scripts/prepare_and_compute.py \
   --input data/NewsSumm_Dataset.xlsx \
   --output_dir data/enhanced \
   --reports_dir reports

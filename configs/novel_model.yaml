@@ -3,8 +3,8 @@ experiment:
   output_dir: "results/novel_model_run_001"
 
 data:
-  # train_file: "data/newssumm_processed/newssumm_processed.json"
-  train_file: /kaggle/input/newssumm-data/newssumm_processed.json
+  train_file: data/enhanced/newssumm_enhanced.json
+  # train_file: /kaggle/input/newssumm-data/newssumm_processed.json
   # train_file: /content/sample_data/newssumm-data/newssumm_processed.json
   val_split: 0.01
   max_input_length: 512
