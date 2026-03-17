@@ -21,7 +21,7 @@ Summary:
 """
 
 # Load model safely (works for both decoder + seq2seq)
-def load_model(model_name):
+def load_model(model_name, device):
 
     token = HF_TOKEN
     tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True, token=token)
@@ -34,7 +34,7 @@ def load_model(model_name):
             model_name,
             torch_dtype=torch.float16,
             token=token,
-            device_map="auto"
+            device_map=device
         )
         is_seq2seq = False
     except:
@@ -42,7 +42,7 @@ def load_model(model_name):
             model_name,
             torch_dtype=torch.float16,
             token=token,
-            device_map="auto"
+            device_map=device
         )
         is_seq2seq = True
 

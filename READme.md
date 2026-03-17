@@ -42,6 +42,7 @@ scripts/
 ├── run_evaluation.py
 ├── train_baseline.py
 ├── train_novel.py
+├── validate_json_schema.py
 └── utils.py
 
 configs/
@@ -172,6 +173,20 @@ Reports:
 - Avg summary length
 - Avg documents per cluster
 - Compression ratio
+
+# 6.5 Dataset Schema Validation
+
+Validate JSON structure before training or evaluation:
+```bash
+python scripts/validate_json_schema.py \
+  --data data/enhanced/newssumm_enhanced.json
+```
+
+Strict mode with sample limit (Uses first n samples and enforces non-empty docs/summary and treats warnings as errors):
+```bash
+python scripts/validate_json_schema.py \
+  --data data/enhanced/newssumm_enhanced.json --strict --sample 10
+```
 
 # 7. Experiment Framework (Reproducibility)
 
