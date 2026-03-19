@@ -20,7 +20,7 @@ Articles:
 Summary:
 """
 
-# Load model safely (works for both decoder + seq2seq)
+# Load model (works for both decoder + seq2seq)
 def load_model(model_name, device):
 
     token = HF_TOKEN
