@@ -1,44 +1,45 @@
 # Enhanced Dataset Stats
 
-- total_documents: 183745
+- total_documents: 183750
 - missing_article_ratio: 0.0
 - missing_summary_ratio: 0.0
-- avg_article_length: 388.4994802579662
-- avg_summary_length: 94.46021932569593
-- Number of clusters: 28
-- Avg documents per cluster: 6562.32
+- avg_article_length: 388.4982530612245
+- avg_summary_length: 94.45990204081633
+- Avg documents per cluster: 487.40
 - Avg document length (words): 388.50
-- Avg summary length (words): 131.75
-- total_article_tokens: 71384837
-- total_summary_tokens: 17356593
+- Avg summary length (words): 95.25
+- total_article_tokens: 71386554
+- total_summary_tokens: 17357007
 - num_sources: 2817
 - source_distribution:
-  - The Times of India: 27495
-  - The Hindu: 13378
+  - The Times of India: 21776
+  - The Hindu: 13380
   - Hindustan Times: 13327
   - Indian Express: 9567
-  - The Economic Times: 9317
-  - The Tribune: 8332
+  - The Economic Times: 9318
+  - The Tribune: 8331
   - The Pioneer: 5666
-  - The Indian Express: 4155
+  - The Indian Express: 4156
   - Mint: 4104
+  - Times of India: 3170
   - The Asian Age: 3142
   - The Arunachal Times: 2778
   - Deccan Chronicle: 2771
   - Financial Express: 2639
+  - The Times Of India: 2548
   - Business Standard: 2345
   - The Telegraph: 2319
-  - The New Indian Express: 2061
+  - The New Indian Express: 2060
   - The Arunachal Times : 2025
   - The Morung Express: 1852
 - category_distribution:
-  - Politics: 26285
+  - Politics: 26286
   - National News: 17748
-  - Business and Finance: 17728
-  - Local News: 14488
+  - Business and Finance: 17729
+  - Local News: 14487
   - International News: 14371
   - Crime and Justice: 13192
-  - Sports: 12751
+  - Sports: 12753
   - Entertainment: 11006
   - Health and Wellness: 8785
   - Education: 7065
@@ -46,12 +47,12 @@
   - Environment: 5093
   - Lifestyle and Features: 4264
   - Technology and Gadgets: 3701
-  - Opinion and Editorial: 3434
+  - Opinion and Editorial: 3435
   - Human Interest: 2978
   - Religion and Spirituality: 2208
   - Weather: 2087
   - Miscellaneous: 1973
   - Automotive: 1302
-
 - duplicate_ratio_exact: 0.0
-- num_clusters: 28
+- num_clusters: 377
+- sampled: False

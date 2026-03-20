@@ -3,24 +3,24 @@
   "after_missing": 348502,
   "noise_removed": 20707,
   "after_noise": 327795,
-  "language_removed": 165,
-  "after_language": 327630,
-  "exact_dups_removed": 36245,
-  "after_exact_dedup": 291385,
-  "minhash_dups_removed": 11363,
-  "after_minhash_dedup": 280022,
+  "language_removed": 163,
+  "after_language": 327632,
+  "exact_dups_removed": 36242,
+  "after_exact_dedup": 291390,
+  "minhash_dups_removed": 11364,
+  "after_minhash_dedup": 280026,
   "tfidf_dups_removed": 279,
-  "after_tfidf_dedup": 279743,
+  "after_tfidf_dedup": 279747,
   "cluster_method": "kmeans",
   "cluster_metrics": {
     "kmeans": {
-      "silhouette": -0.0014362691747059496,
-      "intra_sim": 0.07170280537865921,
-      "inter_dist": 0.9311167301788089
+      "silhouette": -0.009852701586160332,
+      "intra_sim": 0.06745885082275938,
+      "inter_dist": 0.9304155843471628
     }
   },
-  "cluster_quality": -0.0014362691747059496,
-  "annotation_removed": 95998,
-  "after_annotation": 183745,
-  "final_rows": 183745
+  "cluster_quality": -0.009852701586160332,
+  "annotation_removed": 95997,
+  "after_annotation": 183750,
+  "final_rows": 183750
 }

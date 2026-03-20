@@ -5,7 +5,6 @@
 - missing_summary_ratio: 0.0006881404724084343
 - avg_article_length: 333.8746208059272
 - avg_summary_length: 94.60757355934925
-- Number of clusters: 0.0
 - total_article_tokens: 116444116
 - total_summary_tokens: 32995905
 - num_sources: 4532
@@ -51,5 +50,28 @@
   - Weather: 4539
   - Religion and Spirituality: 4154
   - Automotive: 2407
-
+- year_distribution:
+  - 1838.0: 4
+  - 1878.0: 3
+  - 1900.0: 1
+  - 1919.0: 1
+  - 1924.0: 1
+  - 1932.0: 3
+  - 1938.0: 1
+  - 1945.0: 1
+  - 1947.0: 1
+  - 1949.0: 1
+  - 1950.0: 82
+  - 1951.0: 11
+  - 1952.0: 1
+  - 1955.0: 2
+  - 1956.0: 1
+  - 1957.0: 2
+  - 1959.0: 1
+  - 1960.0: 23
+  - 1962.0: 1
+  - 1963.0: 1
+- year_min: 1838
+- year_max: 2104
 - duplicate_ratio_exact: 0.08961309301938836
+- sampled: False
