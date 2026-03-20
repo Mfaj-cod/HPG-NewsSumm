@@ -5,7 +5,6 @@
 - missing_summary_ratio: 0.0006881404724084343
 - avg_article_length: 333.8746208059272
 - avg_summary_length: 94.60757355934925
-- Number of clusters: 0.0
 - total_article_tokens: 116444116
 - total_summary_tokens: 32995905
 - num_sources: 4532
@@ -51,5 +50,5 @@
   - Weather: 4539
   - Religion and Spirituality: 4154
   - Automotive: 2407
-
 - duplicate_ratio_exact: 0.08961309301938836
+- sampled: False

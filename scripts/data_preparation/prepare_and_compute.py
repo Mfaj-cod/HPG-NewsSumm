@@ -585,7 +585,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/NewsSumm_Dataset.xlsx")
     parser.add_argument("--output_dir", default="data/enhanced")
-    parser.add_argument("--reports_dir", default="reports") 
+    parser.add_argument("--reports_dir", default="reports")
     parser.add_argument("--minhash_threshold", type=float, default=0.9)
     parser.add_argument("--cosine_threshold", type=float, default=0.95)
     parser.add_argument("--lang", default="en")

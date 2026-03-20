@@ -112,7 +112,7 @@ data/NewsSumm_Dataset.xlsx
 ```
 run:
 ```bash
-python -m scripts/clean_dataset.py
+python scripts/data_preparation/clean_dataset.py
 ```
 
 This step:
@@ -133,7 +133,7 @@ data/NewsSumm_Cleaned.xlsx
 - Convert raw Excel data into structured JSON clusters.
 - Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation).
 ```bash
-python scripts/prepare_and_compute.py \
+python scripts/data_preparation/prepare_and_compute.py \
   --input data/NewsSumm_Dataset.xlsx \
   --output_dir data/enhanced \
   --reports_dir reports
@@ -161,7 +161,7 @@ reports/comparison_table.csv
 
 Compute dataset diagnostics:
 ```bash
-python scripts/compute_stats.py \
+python scripts/data_preparation/compute_stats.py \
 --data data/enhanced/newssumm_enhanced.json
 ```
 
@@ -178,13 +178,13 @@ Reports:
 
 Validate JSON structure before training or evaluation:
 ```bash
-python scripts/validate_json_schema.py \
+python scripts/data_validator/validate_json_schema.py \
   --data data/enhanced/newssumm_enhanced.json
 ```
 
 Strict mode with sample limit (Uses first n samples and enforces non-empty docs/summary and treats warnings as errors):
 ```bash
-python scripts/validate_json_schema.py \
+python scripts/data_validator/validate_json_schema.py \
   --data data/enhanced/newssumm_enhanced.json --strict --sample 10
 ```
 
@@ -212,25 +212,25 @@ Every experiment snapshot includes:
 
 a. LED (Longformer Encoder-Decoder)
 ```bash
-python scripts/train_baseline.py \
+python scripts/training/train_baseline.py \
   --config configs/led_baseline.yaml
 ```
 
 b. LongT5
 ```bash
-python scripts/train_baseline.py \
+python scripts/training/train_baseline.py \
   --config configs/longt5.yaml
 ```
 
 c. PRIMERA
 ```bash
-python scripts/train_baseline.py \
+python scripts/training/train_baseline.py \
   --config configs/primera.yaml
 ```
 
 d. FLAN-T5-XL
 ```bash
-python scripts/train_baseline.py \
+python scripts/training/train_baseline.py \
   --config configs/flan_t5_xl.yaml
 ```
 
@@ -252,15 +252,16 @@ II. Conditional Generation
 
 ## Train HPG
 ```bash
-python scripts/train_novel.py \
+python scripts/training/train_novel.py \
   --config configs/novel_model.yaml
 ```
 
 # 10. Evaluation
 Evaluate any trained run:
 ```bash
-python scripts/evaluate.py \
-  --run results/<run_name>
+python scripts/evaluation/run_evaluation_json.py \
+  --run_dir results/<run_name> \
+  --data data/newssumm_processed/newssumm_processed.json
 ```
 Metrics computed:
 - ROUGE-1
@@ -276,7 +277,7 @@ results/<run_name>/evaluation.json
 
 To reproduce any completed run:
 ```bash
-python scripts/train_baseline.py \
+python scripts/training/train_baseline.py \
   --config results/<run_name>/config.yaml
 ``` 
 This ensures:
@@ -304,25 +305,25 @@ data/NewsSumm_Dataset.xlsx
 ```
 Step 4 – Run Full Pipeline
 ```bash
-python scripts/clean_dataset.py
-python scripts/preprocess.py --input data/NewsSumm_Cleaned.xlsx --output data/processed
-python scripts/compute_stats.py --data data/processed/newssumm_processed.json
+python scripts/data_preparation/clean_dataset.py
+python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports
+python scripts/data_preparation/compute_stats.py --data data/enhanced/newssumm_enhanced.json
 ```
 Step 5 – Train Model
 ```bash
-python scripts/train_baseline.py --config configs/led_baseline.yaml --sample 25000
+python scripts/training/train_baseline.py --config configs/led_baseline.yaml --sample 25000
 ```
 or Train HPG
 ```bash
-python scripts/train_novel.py --config configs/novel_model.yaml --sample 25000
+python scripts/training/train_HPG.py --data data/newssumm_processed/newssumm_processed.json --run_name hpg_v2_run_001
 ```
 Step 6 – Evaluate
 ```bash
-python scripts/evaluate.py --run results/<run_name> --sample 10000
+python scripts/evaluation/run_evaluation_json.py --run_dir results/<run_name> --data data/newssumm_processed/newssumm_processed.json --sample 10000
 ```
 ### For Prompt Based Evaluation
 ```bash
-python prompted_eval.py --model google/flan-t5-xl  --data data/newssumm_processed/newsumm_processed.json --sample 10000 --out_dir results/flan_prompt
+python scripts/evaluation/prompted_eval.py --model google/flan-t5-xl --data data/newssumm_processed/newssumm_processed.json --sample 10000 --out_dir results/flan_prompt
 ```
 
 # 13. Experiment Strategy
