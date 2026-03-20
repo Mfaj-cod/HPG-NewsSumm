@@ -1,8 +1,8 @@
-# Implemented a new enhanced model file at models/HPG.py without touching models/novel_model.py.
+# Implemented a new enhanced model file at models/HPG.py
 
 ---
                                                                                                      
-### What is added in models/HPG.py to push beyond small gains:   
+### What is added in models/HPG.py beyond the first version:   
 
 #### 1. SegmentPooler
 
