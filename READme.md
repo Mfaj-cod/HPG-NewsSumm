@@ -1,4 +1,4 @@
-# Beyond Flat Attention: Hierarchical Content Planning for Multi-Document Abstractive News Summarization
+﻿# Beyond Flat Attention: Hierarchical Content Planning for Multi-Document Abstractive News Summarization
 
 **Reproducible Multi-Document Summarization Research Framework**  
 Indian English News | Long-Context Modeling | Hierarchical Planning
@@ -14,7 +14,7 @@ The project includes:
 - End-to-end **data cleaning and preprocessing**
 - Config-driven **experiment tracking**
 - Multiple **long-context baselines**
-- A novel **Hierarchical Planner–Generator (HPG)** architecture
+- A novel **Hierarchical Plannerâ€“Generator (HPG)** architecture
 - Fully reproducible **training and evaluation pipelines**
 
 The framework is designed for structured experimentation, comparative benchmarking, and controlled ablation studies.
@@ -25,33 +25,59 @@ The framework is designed for structured experimentation, comparative benchmarki
 
 ```bash
 data/
-├── NewsSumm_Dataset.xlsx
-├── processed/
-└── NewsSumm_Cleaned.xlsx
+  NewsSumm_Dataset.xlsx
+  NewsSumm_Cleaned.xlsx
+  NewsSumm_Cleaned.zip
+  enhanced/
+    newssumm_enhanced.json
 
 models/
-├── baseline_led.py
-├── baseline_generic.py
-└── novel_model.py
+  baseline_generic.py
+  baseline_led.py
+  HPG.py
+  novel_model.py
+  __init__.py
 
 scripts/
-├── clean_dataset.py
-├── compute_stats.py
-├── prepare_and_compute.py
-├── prompted_eval.py
-├── run_evaluation.py
-├── train_baseline.py
-├── train_novel.py
-├── validate_json_schema.py
-└── utils.py
+  __init__.py
+  data_preparation/
+    __init__.py
+    clean_dataset.py
+    compute_stats.py
+    prepare_and_compute.py
+  data_validator/
+    __init__.py
+    validate_json_schema.py
+  evaluation/
+    __init__.py
+    prompted_eval.py
+    run_evaluation_excel.py
+    run_evaluation_json.py
+  training/
+    __init__.py
+    train_baseline.py
+    train_HPG.py
+    train_novel.py
 
 configs/
-├── led_baseline.yaml
-├── longt5.yaml
-├── primera.yaml
-├── flan_t5_xl.yaml
-└── novel_model.yaml
+  flan_t5_xl.yaml
+  flan_t5_xxl.yaml
+  gemma_2_9b.yaml
+  led_baseline.yaml
+  llama3_8b.yaml
+  longt5.yaml
+  mistral_7b.yaml
+  mixtral_8x7b.yaml
+  novel_model.yaml
+  primera.yaml
+  qwen2_7b.yaml
 
+HPG_version_docs/
+  HPG.md
+  HPG_v2.md
+
+plots/
+reports/
 results/
 requirements.txt
 ```
@@ -64,12 +90,12 @@ requirements.txt
 ## Hardware
 
 Minimum:
-- 1× GPU (16GB VRAM recommended)
+- 1Ã— GPU (16GB VRAM recommended)
 - 32GB RAM
 - 50GB disk space
 
 For large models (PRIMERA, LongT5, Mixtral):
-- 24–48GB VRAM recommended
+- 24â€“48GB VRAM recommended
 
 ---
 
@@ -194,11 +220,11 @@ All experiments are config-driven via YAML files in: ```bash /configs```
 Each run automatically creates:
 ```bash
 results/<experiment_name>/
-  ├── config.yaml
-  ├── meta.json
-  ├── summary.json
-  ├── evaluation.json
-  └── checkpoint/
+  â”œâ”€â”€ config.yaml
+  â”œâ”€â”€ meta.json
+  â”œâ”€â”€ summary.json
+  â”œâ”€â”€ evaluation.json
+  â””â”€â”€ checkpoint/
 ```
 
 Every experiment snapshot includes:
@@ -234,7 +260,7 @@ python scripts/training/train_baseline.py \
   --config configs/flan_t5_xl.yaml
 ```
 
-# 9. Novel Model – Hierarchical Planner–Generator (HPG)
+# 9. Novel Model â€“ Hierarchical Plannerâ€“Generator (HPG)
 HPG separates summarization into two explicit stages:
 
 I. Document-Level Planning
@@ -288,28 +314,28 @@ This ensures:
 - Deterministic pipeline behavior
 
 # 12. Running on a New System
-Step 1 – Clone Repository
+Step 1 â€“ Clone Repository
 ```bash
 git clone <repo_url>
 cd <repo_name>
 ```
-Step 2 – Setup Environment
+Step 2 â€“ Setup Environment
 ```bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-Step 3 – Place Dataset
+Step 3 â€“ Place Dataset
 ```bash
 data/NewsSumm_Dataset.xlsx
 ```
-Step 4 – Run Full Pipeline
+Step 4 â€“ Run Full Pipeline
 ```bash
 python scripts/data_preparation/clean_dataset.py
 python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports
 python scripts/data_preparation/compute_stats.py --data data/enhanced/newssumm_enhanced.json
 ```
-Step 5 – Train Model
+Step 5 â€“ Train Model
 ```bash
 python scripts/training/train_baseline.py --config configs/led_baseline.yaml --sample 25000
 ```
@@ -317,7 +343,7 @@ or Train HPG
 ```bash
 python scripts/training/train_HPG.py --data data/newssumm_processed/newssumm_processed.json --run_name hpg_v2_run_001
 ```
-Step 6 – Evaluate
+Step 6 â€“ Evaluate
 ```bash
 python scripts/evaluation/run_evaluation_json.py --run_dir results/<run_name> --data data/newssumm_processed/newssumm_processed.json --sample 10000
 ```
@@ -341,7 +367,7 @@ Prompt-Based / Light Inference
 - LLaMA-3-8B-Instruct
 - Qwen2-7B-Instruct
 - Gemma-2-9B-Instruct (if memory allows)
-- Mixtral-8×7B-Instruct (if memory allows)
+- Mixtral-8Ã—7B-Instruct (if memory allows)
 
 # 14. Research Goals
 
@@ -352,3 +378,4 @@ This repository supports:
 - Redundancy-aware modeling
 - Controlled baseline benchmarking
 - Fully reproducible experiments
+
