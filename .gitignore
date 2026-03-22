@@ -41,6 +41,8 @@ data/*.xlsx
 data/*.csv
 data/*.json
 
+scripts/data-split/*.json
+
 # Experiment Outputs (Keeping Structure, Not Content)
 results/**/checkpoint/
 results/**/model*

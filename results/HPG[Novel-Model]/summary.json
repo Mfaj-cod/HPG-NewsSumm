@@ -1,32 +1,37 @@
 {
   "run_name": "hpg_v1",
   "base_model": "allenai/PRIMERA",
-  "data_path": "/kaggle/input/datasets/mfajal/hpg-v2/newssumm_enhanced.json",
-  "train_size": 27,
+  "data_path": "/kaggle/input/datasets/mfajal/cluster-377-data/newssumm_enhanced.json",
+  "train_size": 377,
   "val_size": 1,
-  "epochs": 3,
+  "epochs": 4,
   "batch_size": 1,
   "gradient_accumulation_steps": 8,
   "learning_rate": 2e-05,
   "max_input_length": 1024,
   "max_target_length": 256,
-  "best_val_loss": 8.970965385437012,
+  "best_val_loss": 7.161742,
   "best_epoch": 3,
   "history": [
     {
       "epoch": 1,
-      "train_loss": 18.697521739535862,
-      "val_loss": 12.438631057739258
+      "train_loss": 9.895879,
+      "val_loss": 7.460928
     },
     {
       "epoch": 2,
-      "train_loss": 15.018950780232748,
-      "val_loss": 9.459808349609375
+      "train_loss": 7.840958,
+      "val_loss": 7.344742
     },
     {
       "epoch": 3,
-      "train_loss": 9.99030335744222,
-      "val_loss": 8.970965385437012
+      "train_loss": 7.566148,
+      "val_loss": 7.183565
+    },
+    {
+      "epoch": 4,
+      "train_loss": 7.400644,
+      "val_loss": 7.161742
     }
   ]
 }

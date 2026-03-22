@@ -14,7 +14,8 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# scripts/training/train_HPG.py -> project root
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
@@ -37,7 +38,11 @@ def load_json(path: str) -> List[Dict]:
 
 
 def split_data(
-    data: List[Dict], val_split: float, seed: int
+    data: List[Dict],
+    val_split: float,
+    seed: int,
+    min_val_samples: int = 1,
+    max_val_samples: int = 0,
 ) -> Tuple[List[Dict], List[Dict]]:
     if len(data) < 2 or val_split <= 0:
         return data, []
@@ -47,6 +52,11 @@ def split_data(
     rng.shuffle(idx)
 
     val_size = max(1, int(len(data) * val_split))
+    val_size = max(val_size, min_val_samples)
+    if max_val_samples and max_val_samples > 0:
+        val_size = min(val_size, max_val_samples)
+    val_size = min(val_size, len(data) - 1)
+
     val_idx = set(idx[:val_size])
 
     train_data = [data[i] for i in range(len(data)) if i not in val_idx]
@@ -141,7 +151,7 @@ def run_evaluation_with_existing_script(
     max_input_length: int,
     max_target_length: int,
 ) -> None:
-    eval_script = os.path.join(ROOT_DIR, "scripts", "run_evaluation.py")
+    eval_script = os.path.join(ROOT_DIR, "scripts", "evaluation", "run_evaluation_json.py")
     cmd = [
         sys.executable,
         eval_script,
@@ -156,7 +166,7 @@ def run_evaluation_with_existing_script(
         "--max_target_length",
         str(max_target_length),
     ]
-    print("\nRunning evaluation with scripts/run_evaluation.py ...")
+    print("\nRunning evaluation with scripts/evaluation/run_evaluation_json.py ...")
     print(" ".join(cmd))
     subprocess.run(cmd, check=True)
 
@@ -171,7 +181,13 @@ def main(args):
     if args.sample > 0:
         all_data = all_data[: args.sample]
 
-    train_data, val_data = split_data(all_data, args.val_split, args.seed)
+    train_data, val_data = split_data(
+        all_data,
+        args.val_split,
+        args.seed,
+        min_val_samples=args.min_val_samples,
+        max_val_samples=args.max_val_samples,
+    )
     if len(train_data) == 0:
         raise ValueError("Training split is empty. Increase sample size or reduce val_split.")
 
@@ -241,6 +257,7 @@ def main(args):
     history = []
     best_val = float("inf")
     best_epoch = -1
+    epochs_without_improvement = 0
 
     print(f"Run directory: {out_dir}")
     print(f"Train size: {len(train_data)} | Val size: {len(val_data)}")
@@ -302,13 +319,23 @@ def main(args):
             if val_loss < best_val:
                 best_val = val_loss
                 best_epoch = epoch + 1
+                epochs_without_improvement = 0
             else:
+                epochs_without_improvement += 1
                 should_save = not args.save_best_only
         elif args.save_best_only and epoch != args.epochs - 1:
             should_save = False
 
         if should_save:
             save_checkpoint(model, tokenizer, out_dir)
+
+        if args.early_stopping_patience > 0 and len(val_loader) > 0:
+            if epochs_without_improvement >= args.early_stopping_patience:
+                print(
+                    f"Early stopping triggered at epoch {epoch + 1} "
+                    f"(patience={args.early_stopping_patience})."
+                )
+                break
 
     # Ensure there is always a checkpoint.
     if not os.path.exists(os.path.join(out_dir, "checkpoint")):
@@ -324,8 +351,12 @@ def main(args):
         "batch_size": args.batch_size,
         "gradient_accumulation_steps": args.gradient_accumulation_steps,
         "learning_rate": args.learning_rate,
+        "val_split": args.val_split,
+        "min_val_samples": args.min_val_samples,
+        "max_val_samples": args.max_val_samples,
         "max_input_length": args.max_input_length,
         "max_target_length": args.max_target_length,
+        "early_stopping_patience": args.early_stopping_patience,
         "best_val_loss": None if math.isinf(best_val) else best_val,
         "best_epoch": best_epoch,
         "history": history,
@@ -356,7 +387,9 @@ if __name__ == "__main__":
     parser.add_argument("--base_model", default="allenai/PRIMERA")
 
     parser.add_argument("--sample", type=int, default=0, help="0 means full dataset.")
-    parser.add_argument("--val_split", type=float, default=0.01)
+    parser.add_argument("--val_split", type=float, default=0.10)
+    parser.add_argument("--min_val_samples", type=int, default=32)
+    parser.add_argument("--max_val_samples", type=int, default=0, help="0 means no cap.")
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=8)
@@ -364,12 +397,13 @@ if __name__ == "__main__":
     parser.add_argument("--weight_decay", type=float, default=0.01)
     parser.add_argument("--warmup_ratio", type=float, default=0.03)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
-    parser.add_argument("--max_input_length", type=int, default=1024)
+    parser.add_argument("--max_input_length", type=int, default=4096)
     parser.add_argument("--max_target_length", type=int, default=256)
     parser.add_argument("--num_workers", type=int, default=0)
     parser.add_argument("--fp16", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save_best_only", action="store_true")
+    parser.add_argument("--early_stopping_patience", type=int, default=0)
 
     # HPG-specific knobs
     parser.add_argument("--num_segments", type=int, default=16)
@@ -387,11 +421,10 @@ if __name__ == "__main__":
         "--eval_sample",
         type=int,
         default=0,
-        help="Passed to run_evaluation.py. Use 0 for full evaluation.",
+        help="Passed to run_evaluation_json.py. Use 0 for full evaluation.",
     )
     parser.add_argument("--eval_max_input_length", type=int, default=4096)
     parser.add_argument("--eval_max_target_length", type=int, default=256)
 
     args = parser.parse_args()
     main(args)
-
