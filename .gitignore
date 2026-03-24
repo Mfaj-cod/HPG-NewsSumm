@@ -41,8 +41,6 @@ data/*.xlsx
 data/*.csv
 data/*.json
 
-results/HPG[Novel-Model]/training_summary.json
-
 scripts/data-split/*.json
 
 # Experiment Outputs (Keeping Structure, Not Content)
