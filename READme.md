@@ -51,13 +51,12 @@ scripts/
   evaluation/
     __init__.py
     prompted_eval.py
-    run_evaluation_excel.py
-    run_evaluation_json.py
+    run_evaluation_on_excel.py
+    run_evaluation.py
   training/
     __init__.py
     train_baseline.py
     train_HPG.py
-    train_novel.py
 
 configs/
   flan_t5_xl.yaml
@@ -71,10 +70,6 @@ configs/
   novel_model.yaml
   primera.yaml
   qwen2_7b.yaml
-
-HPG_version_docs/
-  HPG.md
-  HPG_v2.md
 
 plots/
 reports/
