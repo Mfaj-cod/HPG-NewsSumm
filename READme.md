@@ -260,26 +260,34 @@ python scripts/training/train_baseline.py \
   --config configs/flan_t5_xl.yaml
 ```
 
-# 9. Novel Model â€“ Hierarchical Plannerâ€“Generator (HPG)
-HPG separates summarization into two explicit stages:
+# 9. Novel Model "Hierarchical Planner Generator (HPG)"
+HPG separates summarization into these stages:
 
-I. Document-Level Planning
+#### I. SegmentPooler
 
-- Learns salience across documents
-- Redundancy-aware scoring
-- Cross-document representation
+- Builds fixed hierarchical segments from long token sequences (pseudo document-level structure).   
 
-II. Conditional Generation
+#### II. SalienceAwarePlanner
+- Scores segment salience.
+- Uses learned plan queries to extract multiple plan tokens from salient segments.
+- Refines plan tokens with transformer layers.
 
-- Guided decoding
-- Structured content ordering
-- Coverage-aware loss
+
+####  III. PlanConditionedFusion 
+- Lets encoder token states attend to plan tokens and fuse them through a learned gate.
+- Produces plan-aware encoder states before decoding.
+
+
+#### IV. Auxiliary planning objectives            
+                                                                                                            
+- planner_entropy term (focuses salience distribution).
+- plan_redundancy penalty (reduces repetitive plan tokens).
+- Added to generation loss with configurable weights.
 
 
 ## Train HPG
 ```bash
-python scripts/training/train_novel.py \
-  --config configs/novel_model.yaml
+python scripts/training/train_HPG.py --data data/newssumm_processed/newssumm_processed.json
 ```
 
 # 10. Evaluation

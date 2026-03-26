@@ -382,7 +382,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train enhanced HPG model.")
     parser.add_argument("--data", default="data/enhanced/newssumm_enhanced.json")
-    parser.add_argument("--run_name", default="hpg_v2_run_001")
+    parser.add_argument("--run_name", default="hpg_run_001")
     parser.add_argument("--output_root", default="results")
     parser.add_argument("--base_model", default="allenai/PRIMERA")
 
