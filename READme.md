@@ -35,7 +35,6 @@ models/
   baseline_generic.py
   baseline_led.py
   HPG.py
-  novel_model.py
   __init__.py
 
 scripts/
