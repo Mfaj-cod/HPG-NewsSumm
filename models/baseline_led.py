@@ -1,4 +1,4 @@
-# This script defines a baseline LED-based summarization model.
+# baseline LED-based summarization model.
 from transformers import LEDTokenizer, LEDForConditionalGeneration
 
 class LEDSummarizer:

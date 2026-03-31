@@ -1,10 +1,6 @@
 """
-Improved Hierarchical Planner-Generator (HPG) for multi-document summarization.
+Hierarchical Planner-Generator (HPG) for multi-document summarization.
 
-This module is designed as a stronger alternative to models/novel_model.py
-without modifying the original implementation.
-
-Core additions over the previous HPG:
 1. Salience-aware segment planner:
    - Pools token states into pseudo-document segments
    - Scores segment salience
@@ -202,9 +198,9 @@ class PlanConditionedFusion(nn.Module):
         return fused
 
 
-class HierarchicalPlannerGeneratorV2(nn.Module):
+class HierarchicalPlannerGenerator(nn.Module):
     """
-    Enhanced HPG architecture.
+    HPG architecture.
 
     Compatible interface:
     - forward(input_ids, attention_mask, labels=None) -> dict with loss/logits/plan
@@ -327,9 +323,4 @@ class HierarchicalPlannerGeneratorV2(nn.Module):
             attention_mask=conditioned_mask,
             **gen_kwargs,
         )
-
-
-# Convenience alias so this file can be used as a drop-in replacement import:
-# from models.HPG import HierarchicalPlannerGenerator
-HierarchicalPlannerGenerator = HierarchicalPlannerGeneratorV2
 

@@ -20,7 +20,7 @@ system:
 
 training:
   batch_size: 1
-  epochs: 10
+  epochs: 3
   fp16: true
   learning_rate: 2e-5
   seed: 42

@@ -21,7 +21,7 @@ system:
 training:
   seed: 42
   batch_size: 2
-  epochs: 10       
+  epochs: 3     
   grad_accum_steps: 4 
   learning_rate: 2e-5
   fp16: true

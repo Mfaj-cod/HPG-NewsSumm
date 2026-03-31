@@ -27,7 +27,6 @@ The framework is designed for structured experimentation, comparative benchmarki
 data/
   NewsSumm_Dataset.xlsx
   NewsSumm_Cleaned.xlsx
-  NewsSumm_Cleaned.zip
   enhanced/
     newssumm_enhanced.json
 
@@ -35,7 +34,6 @@ models/
   baseline_generic.py
   baseline_led.py
   HPG.py
-  __init__.py
 
 scripts/
   __init__.py
@@ -59,16 +57,10 @@ scripts/
 
 configs/
   flan_t5_xl.yaml
-  flan_t5_xxl.yaml
-  gemma_2_9b.yaml
   led_baseline.yaml
-  llama3_8b.yaml
   longt5.yaml
-  mistral_7b.yaml
-  mixtral_8x7b.yaml
   novel_model.yaml
   primera.yaml
-  qwen2_7b.yaml
 
 plots/
 reports/
@@ -107,7 +99,7 @@ Windows: venv\Scripts\activate
 ```
 ## Install Dependencies
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt 
 ```
 
 ## Set Environment Variable
@@ -156,7 +148,11 @@ data/NewsSumm_Cleaned.xlsx
 python scripts/data_preparation/prepare_and_compute.py \
   --input data/NewsSumm_Dataset.xlsx \
   --output_dir data/enhanced \
-  --reports_dir reports
+  --reports_dir reports \
+  --docs_per_cluster 30 \
+  --cluster_tfidf_max_features 10000 \
+  --cluster_svd_components 64 \
+  --preflight_only
 ```
 This step:
 
@@ -334,7 +330,8 @@ data/NewsSumm_Dataset.xlsx
 Step 4 â€“ Run Full Pipeline
 ```bash
 python scripts/data_preparation/clean_dataset.py
-python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports
+python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports --docs_per_cluster 30 --cluster_tfidf_max_features 10000 --cluster_svd_components 64 --preflight_only
+python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports --docs_per_cluster 30 --cluster_tfidf_max_features 10000 --cluster_svd_components 64 --skip_language_filter --skip_minhash_dedup --skip_tfidf_dedup
 python scripts/data_preparation/compute_stats.py --data data/enhanced/newssumm_enhanced.json
 ```
 Step 5 â€“ Train Model

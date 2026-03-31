@@ -1,58 +1,55 @@
 # Enhanced Dataset Stats
 
-- total_documents: 183750
+- total_documents: 192366
 - missing_article_ratio: 0.0
 - missing_summary_ratio: 0.0
-- avg_article_length: 388.4982530612245
-- avg_summary_length: 94.45990204081633
-- Avg documents per cluster: 487.40
-- Avg document length (words): 388.50
-- Avg summary length (words): 95.25
-- total_article_tokens: 71386554
-- total_summary_tokens: 17357007
-- num_sources: 2817
+- avg_article_length: 392.55844587920944
+- avg_summary_length: 94.86666042855806
+- total_article_tokens: 75514898
+- total_summary_tokens: 18249120
+- num_sources: 2896
 - source_distribution:
-  - The Times of India: 21776
-  - The Hindu: 13380
-  - Hindustan Times: 13327
-  - Indian Express: 9567
-  - The Economic Times: 9318
-  - The Tribune: 8331
-  - The Pioneer: 5666
-  - The Indian Express: 4156
-  - Mint: 4104
-  - Times of India: 3170
-  - The Asian Age: 3142
-  - The Arunachal Times: 2778
-  - Deccan Chronicle: 2771
-  - Financial Express: 2639
-  - The Times Of India: 2548
-  - Business Standard: 2345
-  - The Telegraph: 2319
-  - The New Indian Express: 2060
-  - The Arunachal Times : 2025
-  - The Morung Express: 1852
+  - The Times of India: 22398
+  - Hindustan Times: 14001
+  - The Hindu: 13706
+  - Indian Express: 9834
+  - The Economic Times: 9563
+  - The Tribune: 9079
+  - The Pioneer: 5992
+  - Mint: 4354
+  - The Indian Express: 4200
+  - The Asian Age: 3516
+  - Times of India: 3283
+  - The Arunachal Times: 3164
+  - Financial Express: 3018
+  - Deccan Chronicle: 2866
+  - The Times Of India: 2636
+  - The Telegraph: 2417
+  - Business Standard: 2390
+  - The Arunachal Times : 2217
+  - The New Indian Express: 2137
+  - The Arunachal Front: 1954
 - category_distribution:
-  - Politics: 26286
-  - National News: 17748
-  - Business and Finance: 17729
-  - Local News: 14487
-  - International News: 14371
-  - Crime and Justice: 13192
-  - Sports: 12753
-  - Entertainment: 11006
-  - Health and Wellness: 8785
-  - Education: 7065
-  - Science and Technology: 5318
-  - Environment: 5093
-  - Lifestyle and Features: 4264
-  - Technology and Gadgets: 3701
-  - Opinion and Editorial: 3435
-  - Human Interest: 2978
-  - Religion and Spirituality: 2208
-  - Weather: 2087
-  - Miscellaneous: 1973
-  - Automotive: 1302
+  - Politics: 27609
+  - National News: 18611
+  - Business and Finance: 18588
+  - Local News: 15143
+  - International News: 15076
+  - Crime and Justice: 13788
+  - Sports: 13230
+  - Entertainment: 11360
+  - Health and Wellness: 9220
+  - Education: 7388
+  - Science and Technology: 5626
+  - Environment: 5344
+  - Lifestyle and Features: 4477
+  - Technology and Gadgets: 3894
+  - Opinion and Editorial: 3611
+  - Human Interest: 3137
+  - Religion and Spirituality: 2283
+  - Weather: 2180
+  - Miscellaneous: 2057
+  - Automotive: 1345
 - duplicate_ratio_exact: 0.0
-- num_clusters: 377
+- num_clusters: 14597
 - sampled: False

@@ -5,7 +5,6 @@ import re
 import unicodedata
 import hashlib
 import warnings
-from collections import Counter
 
 import numpy as np
 import pandas as pd
@@ -66,7 +65,17 @@ def resolve_columns(df: pd.DataFrame, args) -> dict:
         ],
         "headline": ["headline", "title", "heading", "newsheadline"],
         "newspaper_name": ["newspaper_name", "newspaper", "source", "publisher", "newssource"],
-        "published_date": ["published_date", "published", "date", "pubdate", "timestamp"],
+        "published_date": [
+            "published_date",
+            "publish_date",
+            "published",
+            "publishedon",
+            "publicationdate",
+            "date",
+            "pubdate",
+            "timestamp",
+            "datetime",
+        ],
         "news_category": ["news_category", "category", "section", "topic"],
     }
 
@@ -85,6 +94,39 @@ def resolve_columns(df: pd.DataFrame, args) -> dict:
             if opt_norm in normalized:
                 found = normalized[opt_norm]
                 break
+
+        # Heuristic fallback for date column if synonym match misses.
+        if found is None and key == "published_date":
+            candidates = []
+            for c in df.columns:
+                nc = normalize_col_name(c)
+                if any(tok in nc for tok in ("date", "publish", "timestamp", "time")):
+                    candidates.append(c)
+
+            best_col = None
+            best_score = -1.0
+            sample_n = min(len(df), 2000)
+            sample_df = df.head(sample_n) if sample_n > 0 else df
+            for c in candidates:
+                raw = sample_df[c]
+                parsed = pd.to_datetime(raw, errors="coerce")
+                numeric = pd.to_numeric(raw, errors="coerce")
+                serial = pd.to_datetime(
+                    numeric,
+                    unit="D",
+                    origin="1899-12-30",
+                    errors="coerce",
+                )
+                parsed = parsed.fillna(serial)
+                score = float(parsed.notna().mean()) if len(parsed) else 0.0
+                if score > best_score:
+                    best_score = score
+                    best_col = c
+
+            # Use fallback only if there is at least modest parseability.
+            if best_col is not None and best_score >= 0.05:
+                found = best_col
+
         if found is None and key in ("article_text", "human_summary"):
             raise ValueError(f"Required column not found: {key}")
         resolved[key] = found
@@ -123,6 +165,46 @@ def word_count(text: str) -> int:
     return len(text.split())
 
 
+def parse_published_date_series(series: pd.Series) -> pd.Series:
+    """
+    Robust date parsing for mixed Excel date formats:
+    - datetime-like strings
+    - ambiguous day/month strings
+    - Excel serial date numbers
+    - year-only strings (fallback)
+    """
+    # Primary parse
+    parsed = pd.to_datetime(series, errors="coerce")
+
+    # Secondary parse for ambiguous day-first textual values.
+    as_str = series.astype("string").str.strip()
+    parsed_dayfirst = pd.to_datetime(as_str, errors="coerce", dayfirst=True)
+    parsed = parsed.fillna(parsed_dayfirst)
+
+    # Excel serial dates fallback (common in spreadsheets).
+    numeric = pd.to_numeric(series, errors="coerce")
+    serial_mask = parsed.isna() & numeric.notna() & numeric.between(20000, 80000)
+    if serial_mask.any():
+        parsed.loc[serial_mask] = pd.to_datetime(
+            numeric[serial_mask],
+            unit="D",
+            origin="1899-12-30",
+            errors="coerce",
+        )
+
+    # Year-only fallback (extract 4-digit year).
+    year_text = as_str.str.extract(r"((?:19|20)\d{2})", expand=False)
+    year_only = pd.to_datetime(year_text, format="%Y", errors="coerce")
+    parsed = parsed.fillna(year_only)
+
+    # Clamp implausible years to NaT to avoid outliers (e.g., 1838, 2104).
+    current_year = pd.Timestamp.now().year
+    bad_year = parsed.notna() & ((parsed.dt.year < 1900) | (parsed.dt.year > current_year + 1))
+    parsed.loc[bad_year] = pd.NaT
+
+    return parsed
+
+
 def compute_basic_stats(df: pd.DataFrame, cols: dict, cluster_col=None, article_col_override=None, summary_col_override=None) -> dict:
     article_col = article_col_override or cols["article_text"]
     summary_col = summary_col_override or cols["human_summary"]
@@ -156,7 +238,7 @@ def compute_basic_stats(df: pd.DataFrame, cols: dict, cluster_col=None, article_
         )
 
     if date_col:
-        dates = pd.to_datetime(df[date_col], errors="coerce")
+        dates = parse_published_date_series(df[date_col])
         years = dates.dt.year.dropna()
         stats["year_distribution"] = years.value_counts().sort_index().to_dict()
         if len(years):
@@ -191,6 +273,97 @@ def save_report_md(path: str, title: str, payload: dict):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
+
+
+def _fmt_int(n: int) -> str:
+    return f"{int(n):,}"
+
+
+def build_preflight_report(df: pd.DataFrame, cols: dict, args) -> dict:
+    usable_rows = int(len(df.dropna(subset=[cols["article_text"], cols["human_summary"]])))
+    docs_per_cluster = int(max(2, args.docs_per_cluster))
+    estimated_clusters = 0
+    if not args.skip_clustering:
+        estimated_clusters = int(args.kmeans_k) if args.kmeans_k else int(np.ceil(usable_rows / docs_per_cluster))
+
+    cluster_dims = 0
+    if not args.skip_clustering:
+        cluster_dims = int(args.cluster_svd_components) if args.cluster_svd_components and args.cluster_svd_components > 0 else int(args.cluster_tfidf_max_features)
+
+    estimated_center_mb = 0.0
+    if estimated_clusters and cluster_dims:
+        estimated_center_mb = (estimated_clusters * cluster_dims * 4) / (1024 ** 2)
+
+    warnings = []
+    errors = []
+
+    if not cols.get("published_date"):
+        warnings.append("No published date column was resolved. Temporal coverage stats will be empty.")
+
+    if usable_rows > 200_000 and not args.skip_language_filter:
+        errors.append(
+            f"Language filtering is enabled on about {_fmt_int(usable_rows)} rows. "
+            "This usually takes hours. Use --skip_language_filter, --sample, or rerun with --force_expensive."
+        )
+
+    if usable_rows > 200_000 and not args.skip_minhash_dedup:
+        errors.append(
+            f"MinHash dedup is enabled on about {_fmt_int(usable_rows)} rows. "
+            "This usually takes hours. Use --skip_minhash_dedup, --sample, or rerun with --force_expensive."
+        )
+
+    if usable_rows > 200_000 and not args.skip_tfidf_dedup:
+        errors.append(
+            f"TF-IDF dedup is enabled on about {_fmt_int(usable_rows)} rows. "
+            "This can still create large sparse matrices. Use --skip_tfidf_dedup or lower --cluster_tfidf_max_features."
+        )
+
+    if estimated_clusters > 20_000:
+        errors.append(
+            f"Estimated cluster count is {_fmt_int(estimated_clusters)} with docs_per_cluster={docs_per_cluster}. "
+            "That is usually too high for practical KMeans runs. Increase --docs_per_cluster, set --kmeans_k, or use --skip_clustering."
+        )
+
+    if not args.skip_clustering and args.cluster_svd_components <= 0 and args.cluster_tfidf_max_features > 10_000:
+        errors.append(
+            "Clustering is configured without SVD reduction on high-dimensional TF-IDF features. "
+            "Use --cluster_svd_components 64 or 128, or lower --cluster_tfidf_max_features."
+        )
+
+    if estimated_center_mb > 1024:
+        warnings.append(
+            f"Estimated KMeans center matrix is about {estimated_center_mb:.1f} MiB "
+            f"({_fmt_int(estimated_clusters)} clusters x {cluster_dims} dims)."
+        )
+
+    return {
+        "rows_total": int(len(df)),
+        "rows_after_missing_check": usable_rows,
+        "published_date_column": cols.get("published_date"),
+        "estimated_clusters": estimated_clusters,
+        "cluster_feature_dims": cluster_dims,
+        "estimated_center_matrix_mb": round(estimated_center_mb, 2),
+        "warnings": warnings,
+        "errors": errors,
+    }
+
+
+def print_preflight_report(report: dict) -> None:
+    print("\nPreflight summary")
+    print(f"- total rows: {_fmt_int(report['rows_total'])}")
+    print(f"- rows after missing article/summary check: {_fmt_int(report['rows_after_missing_check'])}")
+    print(f"- published date column: {report['published_date_column']}")
+    print(f"- estimated clusters: {_fmt_int(report['estimated_clusters']) if report['estimated_clusters'] else 0}")
+    print(f"- cluster feature dims: {report['cluster_feature_dims']}")
+    print(f"- estimated center matrix: {report['estimated_center_matrix_mb']} MiB")
+    if report["warnings"]:
+        print("- warnings:")
+        for item in report["warnings"]:
+            print(f"  - {item}")
+    if report["errors"]:
+        print("- blocking issues:")
+        for item in report["errors"]:
+            print(f"  - {item}")
 
 
 def filter_language(texts, lang="en", threshold=0.8):
@@ -277,6 +450,25 @@ def minhash_dedup(candidates, minhashes, threshold=0.9):
     return keep
 
 
+def remap_candidate_pairs(candidates, keep_mask):
+    """
+    Reuse candidate pairs after filtering rows, instead of rebuilding MinHash
+    over the filtered corpus.
+    """
+    old_to_new = {}
+    new_idx = 0
+    for old_idx, keep in enumerate(keep_mask.tolist()):
+        if keep:
+            old_to_new[old_idx] = new_idx
+            new_idx += 1
+
+    remapped = set()
+    for i, j in candidates:
+        if keep_mask[i] and keep_mask[j]:
+            remapped.add((old_to_new[i], old_to_new[j]))
+    return remapped
+
+
 def tfidf_dedup(texts, candidates, threshold=0.95, max_features=50000):
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.preprocessing import normalize
@@ -284,15 +476,25 @@ def tfidf_dedup(texts, candidates, threshold=0.95, max_features=50000):
     if not candidates:
         return np.ones(len(texts), dtype=bool)
 
-    vectorizer = TfidfVectorizer(max_features=max_features, ngram_range=(1, 2))
-    X = vectorizer.fit_transform(texts)
-    X = normalize(X)
+    # Only vectorize texts that are actually part of candidate duplicate pairs.
+    candidate_pairs = list(candidates)
+    candidate_indices = sorted({idx for pair in candidate_pairs for idx in pair})
+    sub_index = {orig_idx: pos for pos, orig_idx in enumerate(candidate_indices)}
+    subset_texts = [texts[idx] for idx in candidate_indices]
+
+    vectorizer = TfidfVectorizer(
+        max_features=max_features,
+        ngram_range=(1, 2),
+        dtype=np.float32,
+    )
+    X = vectorizer.fit_transform(subset_texts)
+    X = normalize(X, copy=False)
 
     to_drop = set()
-    for i, j in tqdm(list(candidates), desc="TFIDF filtering"):
+    for i, j in tqdm(candidate_pairs, desc="TFIDF filtering"):
         if j in to_drop:
             continue
-        sim = X[i].multiply(X[j]).sum()
+        sim = X[sub_index[i]].multiply(X[sub_index[j]]).sum()
         if sim >= threshold:
             to_drop.add(j)
 
@@ -305,83 +507,37 @@ def tfidf_dedup(texts, candidates, threshold=0.95, max_features=50000):
 def build_tfidf_features(texts, max_features=50000):
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    vectorizer = TfidfVectorizer(max_features=max_features, ngram_range=(1, 2))
+    vectorizer = TfidfVectorizer(
+        max_features=max_features,
+        ngram_range=(1, 2),
+        dtype=np.float32,
+    )
     X = vectorizer.fit_transform(texts)
     return X
 
 
-def ensure_nltk():
-    import nltk
-    try:
-        nltk.data.find("tokenizers/punkt")
-    except LookupError as e:
-        raise RuntimeError(
-            "NLTK punkt not found. Run: python -m nltk.downloader punkt"
-        ) from e
+def reduce_embeddings_for_clustering(embeddings, n_components=256, seed=42):
+    """
+    Reduce high-dimensional sparse TF-IDF matrix before clustering to avoid
+    very large center allocations in KMeans.
+    """
+    from scipy import sparse
+    from sklearn.decomposition import TruncatedSVD
 
+    if n_components is None or n_components <= 0:
+        if sparse.issparse(embeddings):
+            return embeddings.astype(np.float32)
+        return embeddings.astype(np.float32, copy=False)
 
-def add_linguistic_features(df, text_col):
-    ensure_nltk()
-    import nltk
-    import textstat
+    n_features = embeddings.shape[1]
+    if n_components >= n_features:
+        if sparse.issparse(embeddings):
+            return embeddings.astype(np.float32)
+        return embeddings.astype(np.float32, copy=False)
 
-    token_counts = []
-    sentence_counts = []
-    lexical_div = []
-    readability = []
-
-    for text in tqdm(df[text_col].tolist(), desc="Linguistic features"):
-        tokens = text.split()
-        token_count = len(tokens)
-        token_counts.append(token_count)
-        try:
-            sents = nltk.sent_tokenize(text)
-            sentence_counts.append(len(sents))
-        except Exception:
-            sentence_counts.append(max(1, text.count(".") + text.count("!") + text.count("?")))
-
-        if token_count:
-            lexical_div.append(len(set(tokens)) / token_count)
-        else:
-            lexical_div.append(0.0)
-
-        try:
-            readability.append(float(textstat.flesch_reading_ease(text)))
-        except Exception:
-            readability.append(0.0)
-
-    df["token_count"] = token_counts
-    df["sentence_count"] = sentence_counts
-    df["lexical_diversity"] = lexical_div
-    df["readability"] = readability
-    return df
-
-
-def add_ner_features(df, text_col):
-    try:
-        import spacy
-    except Exception as e:
-        raise RuntimeError("spaCy is required for NER features") from e
-
-    try:
-        nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer", "textcat"])
-    except Exception as e:
-        raise RuntimeError(
-            "spaCy model en_core_web_sm not found. Run: python -m spacy download en_core_web_sm"
-        ) from e
-
-    ent_counts = []
-    top_labels = []
-
-    for doc in tqdm(nlp.pipe(df[text_col].tolist(), batch_size=32), total=len(df), desc="NER features"):
-        labels = [ent.label_ for ent in doc.ents]
-        ent_counts.append(len(labels))
-        label_counts = Counter(labels).most_common(3)
-        top_labels.append([f"{lab}:{cnt}" for lab, cnt in label_counts])
-
-    df["ner_count"] = ent_counts
-    df["top_entity_labels"] = top_labels
-    return df
+    svd = TruncatedSVD(n_components=n_components, random_state=seed)
+    reduced = svd.fit_transform(embeddings)
+    return reduced.astype(np.float32, copy=False)
 
 
 def cluster_quality_metrics(embeddings, labels, sample_size=2000):
@@ -426,20 +582,22 @@ def run_clustering(
     embeddings,
     seed=42,
     kmeans_k=None,
+    docs_per_cluster=5,
     dbscan_eps=0.5,
     dbscan_min_samples=5,
     max_agglomerative=50000,
     max_dbscan=50000,
-    max_clusters=30,
 ):
     from sklearn.cluster import KMeans, MiniBatchKMeans, AgglomerativeClustering, DBSCAN
     from scipy import sparse
 
     n = embeddings.shape[0]
+    docs_per_cluster = int(max(2, docs_per_cluster))
     if kmeans_k is None:
-        kmeans_k = max(2, min(max_clusters, int(np.sqrt(n))))
+        # Derive number of clusters from desired docs-per-cluster (no hard cap).
+        kmeans_k = max(2, int(np.ceil(n / docs_per_cluster)))
     else:
-        kmeans_k = max(2, min(max_clusters, kmeans_k))
+        kmeans_k = max(2, kmeans_k)
 
     results = {}
 
@@ -473,6 +631,73 @@ def run_clustering(
             best = name
 
     return best, results
+
+
+def rebalance_cluster_labels(labels, min_size=2, max_size=5):
+    """
+    Rebalance cluster assignments to keep cluster sizes in [min_size, max_size]
+    as much as possible, while preserving all records.
+    """
+    labels = np.asarray(labels)
+    groups = {}
+    for idx, lab in enumerate(labels.tolist()):
+        groups.setdefault(int(lab), []).append(idx)
+
+    chunks = []
+    pending = []
+
+    for _, indices in groups.items():
+        if len(indices) <= max_size:
+            if len(indices) < min_size:
+                pending.extend(indices)
+            else:
+                chunks.append(indices)
+            continue
+
+        local_chunks = [indices[i:i + max_size] for i in range(0, len(indices), max_size)]
+
+        # Fix last tiny chunk by borrowing from previous chunk when possible.
+        if len(local_chunks) >= 2 and len(local_chunks[-1]) < min_size:
+            need = min_size - len(local_chunks[-1])
+            donor = local_chunks[-2]
+            move = min(need, max(0, len(donor) - min_size))
+            if move > 0:
+                local_chunks[-1] = donor[-move:] + local_chunks[-1]
+                local_chunks[-2] = donor[:-move]
+
+        for c in local_chunks:
+            if len(c) < min_size:
+                pending.extend(c)
+            else:
+                chunks.append(c)
+
+    # Pack pending points into new chunks between [min_size, max_size].
+    while len(pending) >= min_size:
+        take = min(max_size, len(pending))
+        if len(pending) - take == 1 and take > min_size:
+            take -= 1
+        chunks.append(pending[:take])
+        pending = pending[take:]
+
+    # Attach tiny leftover if present.
+    if pending:
+        placed = False
+        for c in sorted(chunks, key=len):
+            if len(c) + len(pending) <= max_size:
+                c.extend(pending)
+                placed = True
+                break
+        if not placed:
+            if chunks:
+                chunks[-1].extend(pending)  # rare edge case
+            else:
+                chunks.append(pending)
+
+    new_labels = np.empty(len(labels), dtype=int)
+    for new_id, idxs in enumerate(chunks):
+        for idx in idxs:
+            new_labels[idx] = new_id
+    return new_labels
 
 
 def validate_summaries(df, article_col, summary_col, min_ratio=0.01, max_ratio=0.5,
@@ -599,18 +824,28 @@ def main():
     parser.add_argument("--summary_min_overlap", type=float, default=0.2)
     parser.add_argument("--summary_min_rougeL", type=float, default=0.1)
     parser.add_argument("--skip_topics", action="store_true")
+    parser.add_argument("--skip_language_filter", action="store_true")
     parser.add_argument("--skip_clustering", action="store_true")
     parser.add_argument("--skip_annotation_validation", action="store_true")
-    parser.add_argument("--skip_ner", action="store_true")
+    parser.add_argument("--skip_minhash_dedup", action="store_true")
+    parser.add_argument("--skip_tfidf_dedup", action="store_true")
     parser.add_argument("--export_csv", action="store_true")
     parser.add_argument("--export_xlsx", action="store_true")
     parser.add_argument("--kmeans_k", type=int, default=None)
+    parser.add_argument("--docs_per_cluster", type=int, default=5, help="Desired average/max docs per cluster.")
     parser.add_argument("--dbscan_eps", type=float, default=0.5)
     parser.add_argument("--dbscan_min_samples", type=int, default=5)
     parser.add_argument("--max_agglomerative", type=int, default=50000)
     parser.add_argument("--max_dbscan", type=int, default=50000)
-    parser.add_argument("--max_clusters", type=int, default=30)
     parser.add_argument("--cluster_tfidf_max_features", type=int, default=50000)
+    parser.add_argument(
+        "--cluster_svd_components",
+        type=int,
+        default=256,
+        help="Reduce TF-IDF dimensions before clustering (0 to disable).",
+    )
+    parser.add_argument("--preflight_only", action="store_true")
+    parser.add_argument("--force_expensive", action="store_true")
 
     # Column overrides
     parser.add_argument("--col_article_text", default=None)
@@ -634,6 +869,15 @@ def main():
     df = df.reset_index(drop=True)
 
     cols = resolve_columns(df, args)
+    preflight = build_preflight_report(df, cols, args)
+    print_preflight_report(preflight)
+    if args.preflight_only:
+        return
+    if preflight["errors"] and not args.force_expensive:
+        raise RuntimeError(
+            "Preflight blocked this run before expensive processing started. "
+            "Adjust the configuration, add skip flags, reduce sample size, or rerun with --force_expensive."
+        )
 
     # Baseline stats
     baseline_stats = compute_basic_stats(df, cols)
@@ -663,11 +907,17 @@ def main():
     cleaning_log["after_noise"] = int(len(df))
 
     # Language filter
-    lang_keep = filter_language(df["article_clean"].tolist(), lang=args.lang, threshold=args.lang_threshold)
-    before_lang = len(df)
-    df = df[lang_keep].reset_index(drop=True)
-    cleaning_log["language_removed"] = int(before_lang - len(df))
-    cleaning_log["after_language"] = int(len(df))
+    if args.skip_language_filter:
+        cleaning_log["language_removed"] = 0
+        cleaning_log["after_language"] = int(len(df))
+        cleaning_log["language_filter"] = "skipped"
+    else:
+        lang_keep = filter_language(df["article_clean"].tolist(), lang=args.lang, threshold=args.lang_threshold)
+        before_lang = len(df)
+        df = df[lang_keep].reset_index(drop=True)
+        cleaning_log["language_removed"] = int(before_lang - len(df))
+        cleaning_log["after_language"] = int(len(df))
+        cleaning_log["language_filter"] = "enabled"
 
     # Deduplication: exact hash
     keep_exact = exact_hash_dedup(df, "article_clean")
@@ -677,45 +927,56 @@ def main():
     cleaning_log["after_exact_dedup"] = int(len(df))
 
     # Deduplication: MinHash LSH
-    minhashes, candidates = minhash_candidates(
-        df["article_clean"].tolist(),
-        threshold=args.minhash_threshold,
-        num_perm=128,
-        shingle_size=5,
-    )
-    keep_mh = minhash_dedup(candidates, minhashes, threshold=args.minhash_threshold)
-    keep_mask = np.array([keep_mh[i] for i in range(len(df))], dtype=bool)
-    before_mh = len(df)
-    df = df[keep_mask].reset_index(drop=True)
-    cleaning_log["minhash_dups_removed"] = int(before_mh - len(df))
-    cleaning_log["after_minhash_dedup"] = int(len(df))
-
-    # Deduplication: TFIDF cosine
-    _, candidates_tfidf = minhash_candidates(
-        df["article_clean"].tolist(),
-        threshold=args.minhash_threshold,
-        num_perm=128,
-        shingle_size=5,
-    )
-    keep_tfidf = tfidf_dedup(df["article_clean"].tolist(), candidates_tfidf, threshold=args.cosine_threshold)
-    before_tfidf = len(df)
-    df = df[keep_tfidf].reset_index(drop=True)
-    cleaning_log["tfidf_dups_removed"] = int(before_tfidf - len(df))
-    cleaning_log["after_tfidf_dedup"] = int(len(df))
-
-    # Feature engineering
-    df = add_linguistic_features(df, "article_clean")
-    if args.skip_ner:
-        df["ner_count"] = 0
-        df["top_entity_labels"] = [[] for _ in range(len(df))]
+    candidates = set()
+    keep_mask = np.ones(len(df), dtype=bool)
+    if args.skip_minhash_dedup:
+        cleaning_log["minhash_dups_removed"] = 0
+        cleaning_log["after_minhash_dedup"] = int(len(df))
+        cleaning_log["minhash_dedup"] = "skipped"
     else:
-        df = add_ner_features(df, "article_clean")
+        minhashes, candidates = minhash_candidates(
+            df["article_clean"].tolist(),
+            threshold=args.minhash_threshold,
+            num_perm=128,
+            shingle_size=5,
+        )
+        keep_mh = minhash_dedup(candidates, minhashes, threshold=args.minhash_threshold)
+        keep_mask = np.array([keep_mh[i] for i in range(len(df))], dtype=bool)
+        before_mh = len(df)
+        df = df[keep_mask].reset_index(drop=True)
+        cleaning_log["minhash_dups_removed"] = int(before_mh - len(df))
+        cleaning_log["after_minhash_dedup"] = int(len(df))
+        cleaning_log["minhash_dedup"] = "enabled"
+
+    # Deduplication: TFIDF cosine on the surviving MinHash candidates only.
+    if args.skip_tfidf_dedup:
+        cleaning_log["tfidf_dups_removed"] = 0
+        cleaning_log["after_tfidf_dedup"] = int(len(df))
+        cleaning_log["tfidf_dedup"] = "skipped"
+    else:
+        candidates_tfidf = remap_candidate_pairs(candidates, keep_mask) if candidates else set()
+        keep_tfidf = tfidf_dedup(
+            df["article_clean"].tolist(),
+            candidates_tfidf,
+            threshold=args.cosine_threshold,
+            max_features=args.cluster_tfidf_max_features,
+        )
+        before_tfidf = len(df)
+        df = df[keep_tfidf].reset_index(drop=True)
+        cleaning_log["tfidf_dups_removed"] = int(before_tfidf - len(df))
+        cleaning_log["after_tfidf_dedup"] = int(len(df))
+        cleaning_log["tfidf_dedup"] = "enabled"
+
+    # Lightweight features only: skip expensive linguistic/NER feature extraction.
+    df["ner_count"] = 0
+    df["top_entity_labels"] = [[] for _ in range(len(df))]
+    cleaning_log["feature_engineering"] = "skipped_linguistic_and_ner"
 
     # Topic modeling (skipped)
     df["topic_id"] = -1
     df["topic_prob"] = 0.0
 
-    # Clustering (TF-IDF based, capped at max_clusters)
+    # Clustering (TF-IDF based, cluster count derived from docs_per_cluster)
     if args.skip_clustering:
         df["cluster_label"] = np.arange(len(df))
         cleaning_log["cluster_method"] = "none"
@@ -726,17 +987,29 @@ def main():
             df["article_clean"].tolist(),
             max_features=args.cluster_tfidf_max_features,
         )
-        best, all_results = run_clustering(
+        cluster_features = reduce_embeddings_for_clustering(
             tfidf_features,
+            n_components=args.cluster_svd_components,
+            seed=42,
+        )
+        cleaning_log["cluster_feature_shape"] = [int(cluster_features.shape[0]), int(cluster_features.shape[1])]
+
+        best, all_results = run_clustering(
+            cluster_features,
             seed=42,
             kmeans_k=args.kmeans_k,
+            docs_per_cluster=args.docs_per_cluster,
             dbscan_eps=args.dbscan_eps,
             dbscan_min_samples=args.dbscan_min_samples,
             max_agglomerative=args.max_agglomerative,
             max_dbscan=args.max_dbscan,
-            max_clusters=args.max_clusters,
         )
         cluster_labels = all_results[best]["labels"]
+        cluster_labels = rebalance_cluster_labels(
+            cluster_labels,
+            min_size=2,
+            max_size=max(2, args.docs_per_cluster),
+        )
         df["cluster_label"] = cluster_labels
         cluster_metrics = {name: res["metrics"] for name, res in all_results.items()}
         cleaning_log["cluster_method"] = best
@@ -754,9 +1027,13 @@ def main():
 
     # Temporal structuring
     if cols["published_date"]:
-        df["published_date_parsed"] = pd.to_datetime(df[cols["published_date"]], errors="coerce")
+        df["published_date_parsed"] = parse_published_date_series(df[cols["published_date"]])
+        cleaning_log["published_date_column"] = cols["published_date"]
+        cleaning_log["published_date_parse_rate"] = float(df["published_date_parsed"].notna().mean())
     else:
         df["published_date_parsed"] = pd.to_datetime(pd.Series([None] * len(df)))
+        cleaning_log["published_date_column"] = None
+        cleaning_log["published_date_parse_rate"] = 0.0
 
     # Annotation validation
     keep_ann = None
