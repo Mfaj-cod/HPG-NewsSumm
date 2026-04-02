@@ -204,6 +204,46 @@ python scripts/data_validator/validate_json_schema.py \
   --data data/enhanced/newssumm_enhanced.json --strict --sample 10
 ```
 
+# 6.6 Pipeline Diagrams
+
+Generate visual diagrams for data preparation pipeline and HPG model architecture.
+
+**Requirements:**
+Graphviz must be installed on your system:
+- **Ubuntu/Debian:** `sudo apt-get install graphviz`
+- **macOS:** `brew install graphviz`
+- **Windows:** Download from https://graphviz.org/download/ or `choco install graphviz`
+
+## Data Preparation Pipeline Diagram
+
+Generates a visual flowchart of the data preparation pipeline stages (loading, cleaning, filtering, deduplication, clustering, validation):
+
+```bash
+python scripts/diagram_generators/data_preparation-diagram.py
+```
+
+Output files:
+```bash
+dataprep_pipeline.ps    # PostScript format
+dataprep_pipeline.jpg   # JPEG format
+```
+
+## HPG Model Architecture Diagram
+
+Generates a visual representation of the Hierarchical Planner-Generator (HPG) model architecture, showing the encoder, planner, fusion, decoder, and loss function components:
+
+```bash
+python scripts/diagram_generators/HPG-diagram.py
+```
+
+Output files:
+```bash
+hpg_architecture.ps     # PostScript format
+hpg_architecture.jpg    # JPEG format
+```
+
+Both diagrams are rendered at 300 DPI for high-quality publication-ready output.
+
 # 7. Experiment Framework (Reproducibility)
 
 All experiments are config-driven via YAML files in: ```bash /configs```

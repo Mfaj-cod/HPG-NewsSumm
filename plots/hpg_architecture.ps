@@ -1,0 +1,659 @@
+%!PS-Adobe-3.0
+%%Creator: graphviz version 14.1.4 (20260321.0153)
+%%Title: HPG_Pipeline
+%%Pages: (atend)
+%%BoundingBox: (atend)
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+       dup 1 exch div /InvScaleFactor exch def
+       scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+/tapered { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw text fitted to its expected width
+/alignedtext {			% width text
+	/text exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
+		} if
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+setupLatin1
+%%Page: 1 1
+%%PageBoundingBox: 150 150 2375 4002
+%%PageOrientation: Portrait
+0 0 1 beginpage
+gsave
+150 150 2225 3852 boxprim clip newpath
+4.16667 4.16667 set_scale 0 rotate 40 40 translate
+% cluster_model
+gsave
+1 setlinewidth
+dashed
+0 0 0 graphcolor
+newpath 8 8 moveto
+8 908.5 lineto
+518 908.5 lineto
+518 8 lineto
+closepath stroke
+0 0 0 graphcolor
+14 /Helvetica-Bold set_font
+166.25 891.2 moveto 193.5 (HPG MODEL ARCHITECTURE) alignedtext
+grestore
+% enc
+gsave
+0.64286 0.056911 0.96471 nodecolor
+newpath 345.25 864.75 moveto
+345.25 864.75 178.75 864.75 178.75 864.75 curveto
+172.75 864.75 166.75 858.75 166.75 852.75 curveto
+166.75 852.75 166.75 783.75 166.75 783.75 curveto
+166.75 777.75 172.75 771.75 178.75 771.75 curveto
+178.75 771.75 345.25 771.75 345.25 771.75 curveto
+351.25 771.75 357.25 777.75 357.25 783.75 curveto
+357.25 783.75 357.25 852.75 357.25 852.75 curveto
+357.25 858.75 351.25 864.75 345.25 864.75 curveto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 345.25 864.75 moveto
+345.25 864.75 178.75 864.75 178.75 864.75 curveto
+172.75 864.75 166.75 858.75 166.75 852.75 curveto
+166.75 852.75 166.75 783.75 166.75 783.75 curveto
+166.75 777.75 172.75 771.75 178.75 771.75 curveto
+178.75 771.75 345.25 771.75 345.25 771.75 curveto
+351.25 771.75 357.25 777.75 357.25 783.75 curveto
+357.25 783.75 357.25 852.75 357.25 852.75 curveto
+357.25 858.75 351.25 864.75 345.25 864.75 curveto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+194.125 835.35 moveto 135.75 (ENCODER \(Base Model\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+214.75 821.1 moveto 94.5 (allenai/PRIMERA) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+188.5 806.85 moveto 147 (Input: [article_tokens, mask]) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+184.75 792.6 moveto 154.5 (Output: token_states \(B, T, H\)) alignedtext
+grestore
+% plan
+gsave
+0.49074 0.07438 0.94902 nodecolor
+newpath 280.5 726.75 moveto
+280.5 726.75 61.5 726.75 61.5 726.75 curveto
+55.5 726.75 49.5 720.75 49.5 714.75 curveto
+49.5 714.75 49.5 603 49.5 603 curveto
+49.5 597 55.5 591 61.5 591 curveto
+61.5 591 280.5 591 280.5 591 curveto
+286.5 591 292.5 597 292.5 603 curveto
+292.5 603 292.5 714.75 292.5 714.75 curveto
+292.5 720.75 286.5 726.75 280.5 726.75 curveto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 280.5 726.75 moveto
+280.5 726.75 61.5 726.75 61.5 726.75 curveto
+55.5 726.75 49.5 720.75 49.5 714.75 curveto
+49.5 714.75 49.5 603 49.5 603 curveto
+49.5 597 55.5 591 61.5 591 curveto
+61.5 591 280.5 591 280.5 591 curveto
+286.5 591 292.5 597 292.5 603 curveto
+292.5 603 292.5 714.75 292.5 714.75 curveto
+292.5 720.75 286.5 726.75 280.5 726.75 curveto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+85.875 697.35 moveto 170.25 (SALIENCE-AWARE PLANNER) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+70.875 683.1 moveto 200.25 (- Segment Pooler \(16 fixed segments\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+102 668.85 moveto 138 (- Segment Attention Layer) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+92.625 654.6 moveto 156.75 (- Salience Head \(NN scoring\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+69.75 640.35 moveto 202.5 (- Query Attention \(6 learnable queries\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+77.25 626.1 moveto 187.5 (- Plan Refiner \(2-layer Transformer\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+67.5 611.85 moveto 207 (Outputs: plan_tokens \(B, 6, H\) + scores) alignedtext
+grestore
+% enc->plan
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 235.434 771.308 moveto
+229.205 760.534 222.399 748.764 215.619 737.038 curveto
+stroke
+0 0 0 edgecolor
+newpath 218.736 735.438 moveto
+210.7 728.533 lineto
+212.676 738.942 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 218.736 735.438 moveto
+210.7 728.533 lineto
+212.676 738.942 lineto
+closepath stroke
+grestore
+% fuse
+gsave
+0.8125 0.065306 0.96078 nodecolor
+newpath 423.75 535 moveto
+423.75 535 242.25 535 242.25 535 curveto
+236.25 535 230.25 529 230.25 523 curveto
+230.25 523 230.25 439.75 230.25 439.75 curveto
+230.25 433.75 236.25 427.75 242.25 427.75 curveto
+242.25 427.75 423.75 427.75 423.75 427.75 curveto
+429.75 427.75 435.75 433.75 435.75 439.75 curveto
+435.75 439.75 435.75 523 435.75 523 curveto
+435.75 529 429.75 535 423.75 535 curveto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 423.75 535 moveto
+423.75 535 242.25 535 242.25 535 curveto
+236.25 535 230.25 529 230.25 523 curveto
+230.25 523 230.25 439.75 230.25 439.75 curveto
+230.25 433.75 236.25 427.75 242.25 427.75 curveto
+242.25 427.75 423.75 427.75 423.75 427.75 curveto
+429.75 427.75 435.75 433.75 435.75 439.75 curveto
+435.75 439.75 435.75 523 435.75 523 curveto
+435.75 529 429.75 535 423.75 535 curveto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+248.25 505.6 moveto 169.5 (PLAN-CONDITIONED FUSION) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+267.375 491.35 moveto 131.25 (- Token-to-Plan Attention) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+262.5 477.1 moveto 141 (- Gated Addition \(Sigmoid\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+281.625 462.85 moveto 102.75 (- FFN + LayerNorm) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+250.875 448.6 moveto 164.25 (Outputs: fused_tokens \(B, T, H\)) alignedtext
+grestore
+% enc->fuse
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 297.952 771.5 moveto
+307.136 757.782 316.077 742.246 322 726.75 curveto
+349.184 655.635 351.063 632.892 345 557 curveto
+344.727 553.579 344.384 550.077 343.989 546.548 curveto
+stroke
+0 0 0 edgecolor
+newpath 347.477 546.234 moveto
+342.758 536.748 lineto
+340.531 547.106 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 347.477 546.234 moveto
+342.758 536.748 lineto
+340.531 547.106 lineto
+closepath stroke
+grestore
+% plan->fuse
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 233.17 590.524 moveto
+247.399 575.109 262.449 558.805 276.428 543.661 curveto
+stroke
+0 0 0 edgecolor
+newpath 278.834 546.215 moveto
+283.045 536.493 lineto
+273.691 541.467 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 278.834 546.215 moveto
+283.045 536.493 lineto
+273.691 541.467 lineto
+closepath stroke
+0 0 0 edgecolor
+10 /Helvetica set_font
+261.699 559.5 moveto 69.75 ( queries context) alignedtext
+grestore
+% concat
+gsave
+0 0 0.96078 nodecolor
+newpath 292.125 382.75 moveto
+292.125 382.75 91.875 382.75 91.875 382.75 curveto
+85.875 382.75 79.875 376.75 79.875 370.75 curveto
+79.875 370.75 79.875 301.75 79.875 301.75 curveto
+79.875 295.75 85.875 289.75 91.875 289.75 curveto
+91.875 289.75 292.125 289.75 292.125 289.75 curveto
+298.125 289.75 304.125 295.75 304.125 301.75 curveto
+304.125 301.75 304.125 370.75 304.125 370.75 curveto
+304.125 376.75 298.125 382.75 292.125 382.75 curveto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 292.125 382.75 moveto
+292.125 382.75 91.875 382.75 91.875 382.75 curveto
+85.875 382.75 79.875 376.75 79.875 370.75 curveto
+79.875 370.75 79.875 301.75 79.875 301.75 curveto
+79.875 295.75 85.875 289.75 91.875 289.75 curveto
+91.875 289.75 292.125 289.75 292.125 289.75 curveto
+298.125 289.75 304.125 295.75 304.125 301.75 curveto
+304.125 301.75 304.125 370.75 304.125 370.75 curveto
+304.125 376.75 298.125 382.75 292.125 382.75 curveto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+105.75 353.35 moveto 172.5 (CONCATENATION & MASKING) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+97.875 339.1 moveto 188.25 (State: [plan_tokens || fused_tokens]) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+108.75 324.85 moveto 166.5 (Mask: [plan_mask || orig_mask]) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+108.375 310.6 moveto 167.25 (Conditioned Output: \(B, T+6, H\)) alignedtext
+grestore
+% plan->concat
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 175.402 590.661 moveto
+179.209 532.545 184.651 449.449 188.253 394.461 curveto
+stroke
+0 0 0 edgecolor
+newpath 191.732 394.891 moveto
+188.893 384.683 lineto
+184.747 394.433 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 191.732 394.891 moveto
+188.893 384.683 lineto
+184.747 394.433 lineto
+closepath stroke
+grestore
+% fuse->concat
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 280.897 427.487 moveto
+269.169 415.582 256.711 402.936 244.949 390.997 curveto
+stroke
+0 0 0 edgecolor
+newpath 247.508 388.607 moveto
+237.996 383.94 lineto
+242.521 393.52 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 247.508 388.607 moveto
+237.996 383.94 lineto
+242.521 393.52 lineto
+closepath stroke
+grestore
+% dec
+gsave
+0.64286 0.056911 0.96471 nodecolor
+newpath 315 244.75 moveto
+315 244.75 69 244.75 69 244.75 curveto
+63 244.75 57 238.75 57 232.75 curveto
+57 232.75 57 178 57 178 curveto
+57 172 63 166 69 166 curveto
+69 166 315 166 315 166 curveto
+321 166 327 172 327 178 curveto
+327 178 327 232.75 327 232.75 curveto
+327 238.75 321 244.75 315 244.75 curveto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 315 244.75 moveto
+315 244.75 69 244.75 69 244.75 curveto
+63 244.75 57 238.75 57 232.75 curveto
+57 232.75 57 178 57 178 curveto
+57 172 63 166 69 166 curveto
+69 166 315 166 315 166 curveto
+321 166 327 172 327 178 curveto
+327 178 327 232.75 327 232.75 curveto
+327 238.75 321 244.75 315 244.75 curveto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+115.5 215.35 moveto 153 (DECODER + GENERATION) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+142.5 201.1 moveto 99 (Seq2Seq Decoder) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+75 186.85 moveto 234 (Autoregressive summary_tokens generation) alignedtext
+grestore
+% concat->dec
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 192 289.451 moveto
+192 278.824 192 267.458 192 256.651 curveto
+stroke
+0 0 0 edgecolor
+newpath 195.5 256.719 moveto
+192 246.719 lineto
+188.5 256.719 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 195.5 256.719 moveto
+192 246.719 lineto
+188.5 256.719 lineto
+closepath stroke
+grestore
+% loss
+gsave
+0.975 0.078431 1 nodecolor
+newpath 229.5 121 moveto
+28.5 121 lineto
+28.5 28 lineto
+235.5 28 lineto
+235.5 115 lineto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 229.5 121 moveto
+28.5 121 lineto
+28.5 28 lineto
+235.5 28 lineto
+235.5 115 lineto
+closepath stroke
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 229.5 121 moveto
+229.5 115 lineto
+stroke
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 235.5 115 moveto
+229.5 115 lineto
+stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+79.125 91.6 moveto 105.75 (MULTI-TASK LOSS) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+72.375 77.35 moveto 119.25 (- NLLLoss \(Main Task\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+46.5 63.1 moveto 171 (- Planner Entropy Loss \(w=0.01\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+55.5 48.85 moveto 153 (- Redundancy Loss \(w=0.03\)) alignedtext
+grestore
+% dec->loss
+gsave
+1 setlinewidth
+dashed
+0 0 0 edgecolor
+newpath 173.998 165.708 moveto
+169.03 155.036 163.535 143.235 158.204 131.784 curveto
+stroke
+0 0 0 edgecolor
+newpath 161.405 130.368 moveto
+154.012 122.779 lineto
+155.059 133.322 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 161.405 130.368 moveto
+154.012 122.779 lineto
+155.059 133.322 lineto
+closepath stroke
+grestore
+% out2
+gsave
+0.34615 0.053061 0.96078 nodecolor
+newpath 498.375 121 moveto
+495.375 125 lineto
+474.375 125 lineto
+471.375 121 lineto
+293.625 121 lineto
+293.625 28 lineto
+498.375 28 lineto
+closepath fill
+1 setlinewidth
+filled
+0 0 0 nodecolor
+newpath 498.375 121 moveto
+495.375 125 lineto
+474.375 125 lineto
+471.375 121 lineto
+293.625 121 lineto
+293.625 28 lineto
+498.375 28 lineto
+closepath stroke
+0 0 0 nodecolor
+12 /Helvetica set_font
+352.5 91.6 moveto 87 (FINAL OUTPUT) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+311.625 77.35 moveto 168.75 (- Generated Summary \(Primary\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+321 63.1 moveto 150 (- Plan Tokens \(Interpretable\)) alignedtext
+0 0 0 nodecolor
+12 /Helvetica set_font
+348.75 48.85 moveto 94.5 (- Salience Scores) alignedtext
+grestore
+% dec->out2
+gsave
+1 setlinewidth
+0 0 0 edgecolor
+newpath 253.483 165.533 moveto
+272.524 153.505 293.813 140.056 314.012 127.295 curveto
+stroke
+0 0 0 edgecolor
+newpath 315.65 130.401 moveto
+322.234 122.101 lineto
+311.911 124.483 lineto
+closepath fill
+1 setlinewidth
+solid
+0 0 0 edgecolor
+newpath 315.65 130.401 moveto
+322.234 122.101 lineto
+311.911 124.483 lineto
+closepath stroke
+grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+%%BoundingBox: 150 150 2375 4002
+end
+restore
+%%EOF
