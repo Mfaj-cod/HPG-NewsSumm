@@ -7,7 +7,7 @@ def create_dataprep_diagram():
     dot = graphviz.Digraph('DataPrep_Pipeline')
 
     # Base attributes (1200 DPI for safe, high-quality rendering)
-    dot.attr(dpi='1200', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
+    dot.attr(dpi='800', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
     dot.attr('node', shape='box', style='filled,rounded', fontname='Helvetica', fontsize='12', margin='0.25')
     dot.attr('edge', fontname='Helvetica', fontsize='10')
 
@@ -36,7 +36,6 @@ def create_dataprep_diagram():
         c1.node('dedup', 'Deduplication Layer\n1. Exact Hash (Fast Duplicate Elimination)\n2. MinHash (LSH, Sim > 0.9)\n3. TF-IDF (Cosine Sim > 0.95)', fillcolor=colors['dedup'])
         
         c1.node('cluster', 'Clustering Stage\nTF-IDF Vectorizer (max 50K features)\nSVD Reduction (256 components)\nEvaluated via Silhouette Score', fillcolor=colors['cluster'])
-        c1.node('rebal', 'Cluster Rebalancing\nEnforcing min_size=2, max_size=5 docs', fillcolor=colors['cluster'])
         
         c1.node('val', 'Summary Validation\nROUGE-L >= 0.1\nContent Overlap >= 0.2\nLength Ratio: 0.01 - 0.5x', fillcolor=colors['validate'])
         
