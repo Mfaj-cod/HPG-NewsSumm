@@ -6,8 +6,8 @@ def create_dataprep_diagram():
     
     dot = graphviz.Digraph('DataPrep_Pipeline')
 
-    # Base attributes (300 DPI for safe, high-quality rendering)
-    dot.attr(dpi='300', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
+    # Base attributes (1200 DPI for safe, high-quality rendering)
+    dot.attr(dpi='1200', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
     dot.attr('node', shape='box', style='filled,rounded', fontname='Helvetica', fontsize='12', margin='0.25')
     dot.attr('edge', fontname='Helvetica', fontsize='10')
 

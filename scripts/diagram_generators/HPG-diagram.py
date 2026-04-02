@@ -7,7 +7,7 @@ def create_hpg_diagram():
     dot = graphviz.Digraph('HPG_Pipeline')
 
     # Base attributes
-    dot.attr(dpi='300', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
+    dot.attr(dpi='1200', nodesep='0.8', ranksep='0.6', fontname='Helvetica', compound='true')
     dot.attr('node', shape='box', style='filled,rounded', fontname='Helvetica', fontsize='12', margin='0.25')
     dot.attr('edge', fontname='Helvetica', fontsize='10')
 

@@ -49,6 +49,8 @@ scripts/
     __init__.py
     data_preparation-diagram.py
     HPG-diagram.py
+    comparison_table-diagram.py
+    comparison-diagram.py
   evaluation/
     __init__.py
     prompted_eval.py
@@ -246,7 +248,44 @@ hpg_architecture.ps     # PostScript format
 hpg_architecture.jpg    # JPEG format
 ```
 
-Both diagrams are rendered at 300 DPI for high-quality publication-ready output.
+## Summarization Architecture Comparison Diagram
+
+Generates a comprehensive comparison between traditional summarization techniques and the HPG architecture:
+- **Section 1**: Extractive, Abstractive (Seq2Seq), Hierarchical Attention, and Long-Context baselines
+- **Section 2**: Hierarchical Planner-Generator (HPG) improvements and key features
+- **Section 3**: Visual component flow and relative performance
+
+```bash
+python scripts/diagram_generators/comparison-diagram.py
+```
+
+Output files:
+```bash
+summarization_comparison.ps    # PostScript format
+summarization_comparison.jpg   # JPEG format
+```
+
+## Architecture Comparison Table
+
+Generates a detailed feature comparison table across different summarization architectures:
+- Interpretability ratings
+- Multi-document support
+- Context length capabilities
+- Computational cost
+- Planning transparency
+- Performance status
+
+```bash
+python scripts/diagram_generators/comparison_table-diagram.py
+```
+
+Output files:
+```bash
+comparison_table.ps    # PostScript format
+comparison_table.jpg   # JPEG format
+```
+
+**All diagrams are rendered at high DPI (300–1200) for publication-ready output.**
 
 # 7. Experiment Framework (Reproducibility)
 
