@@ -45,6 +45,10 @@ scripts/
   data_validator/
     __init__.py
     validate_json_schema.py
+  diagram_generators/
+    __init__.py
+    data_preparation-diagram.py
+    HPG-diagram.py
   evaluation/
     __init__.py
     prompted_eval.py
