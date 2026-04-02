@@ -194,7 +194,7 @@ Reports:
 - Avg documents per cluster
 - Compression ratio
 
-# 6.5 Dataset Schema Validation
+# 6.1 Dataset Schema Validation
 
 Validate JSON structure before training or evaluation:
 ```bash
@@ -208,7 +208,7 @@ python scripts/data_validator/validate_json_schema.py \
   --data data/enhanced/newssumm_enhanced.json --strict --sample 10
 ```
 
-# 6.6 Pipeline Diagrams
+# 6.2 Pipeline Diagrams
 
 Generate visual diagrams for data preparation pipeline and HPG model architecture.
 
