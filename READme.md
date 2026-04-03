@@ -196,11 +196,11 @@ All experiments are config-driven via YAML files in: ```bash /configs```
 Each run automatically creates:
 ```bash
 results/<experiment_name>/
-  â”œâ”€â”€ config.yaml
-  â”œâ”€â”€ meta.json
-  â”œâ”€â”€ summary.json
-  â”œâ”€â”€ evaluation.json
-  â””â”€â”€ checkpoint/
+  config.yaml
+  meta.json
+  summary.json
+  evaluation.json
+  checkpoint/
 ```
 
 Every experiment snapshot includes:
@@ -298,29 +298,29 @@ This ensures:
 - Deterministic pipeline behavior
 
 # 11. Running on a New System
-Step 1 â€“ Clone Repository
+Step 1 - Clone Repository
 ```bash
 git clone <repo_url>
 cd <repo_name>
 ```
-Step 2 â€“ Setup Environment
+Step 2 - Setup Environment
 ```bash
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-Step 3 â€“ Place Dataset
+Step 3 - Place Dataset
 ```bash
 data/NewsSumm_Dataset.xlsx
 ```
-Step 4 â€“ Run Full Pipeline
+Step 4 - Run Full Pipeline
 ```bash
 python scripts/data_preparation/clean_dataset.py
 python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports --docs_per_cluster 30 --cluster_tfidf_max_features 10000 --cluster_svd_components 64 --preflight_only
 python scripts/data_preparation/prepare_and_compute.py --input data/NewsSumm_Cleaned.xlsx --output_dir data/enhanced --reports_dir reports --docs_per_cluster 30 --cluster_tfidf_max_features 10000 --cluster_svd_components 64 --skip_language_filter --skip_minhash_dedup --skip_tfidf_dedup
 python scripts/data_preparation/compute_stats.py --data data/enhanced/newssumm_enhanced.json
 ```
-Step 5 â€“ Train Model
+Step 5 - Train Model
 ```bash
 python scripts/training/train_baseline.py --config configs/led_baseline.yaml --sample 25000
 ```
@@ -328,7 +328,7 @@ or Train HPG
 ```bash
 python scripts/training/train_HPG.py --data data/newssumm_processed/newssumm_processed.json --run_name hpg_v2_run_001
 ```
-Step 6 â€“ Evaluate
+Step 6 - Evaluate
 ```bash
 python scripts/evaluation/run_evaluation_json.py --run_dir results/<run_name> --data data/newssumm_processed/newssumm_processed.json --sample 10000
 ```
