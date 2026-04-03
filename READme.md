@@ -14,7 +14,7 @@ The project includes:
 - End-to-end **data cleaning and preprocessing**
 - Config-driven **experiment tracking**
 - Multiple **long-context baselines**
-- A novel **Hierarchical Plannerâ€“Generator (HPG)** architecture
+- A novel **Hierarchical Planner-Generator (HPG)** architecture
 - Fully reproducible **training and evaluation pipelines**
 
 The framework is designed for structured experimentation, comparative benchmarking, and controlled ablation studies.
@@ -71,21 +71,7 @@ requirements.txt
 
 ---
 
-# 1. System Requirements
-
-## Hardware
-
-Minimum:
-- 1Ã— GPU (16GB VRAM recommended)
-- 32GB RAM
-- 50GB disk space
-
-For large models (PRIMERA, LongT5, Mixtral):
-- 24â€“48GB VRAM recommended
-
----
-
-# 2. Environment Setup
+# 1. Environment Setup
 
 ## Create Virtual Environment
 
@@ -113,11 +99,11 @@ python -m spacy download en_core_web_sm
 python -m nltk.downloader punkt
 ```
 
-# 3. Dataset Setup
+# 2. Dataset Setup
 ```bash
 Place the dataset file at: data/NewsSumm_Dataset.xlsx
 ```
-# 4. Data Cleaning Pipeline
+# 3. Data Cleaning Pipeline
 Input:
 ```bash
 data/NewsSumm_Dataset.xlsx
@@ -141,7 +127,7 @@ Output:
 data/NewsSumm_Cleaned.xlsx
 ```
 
-# 5. Preprocessing Pipeline
+# 4. Preprocessing Pipeline
 - Convert raw Excel data into structured JSON clusters.
 - Enhanced preprocessing (full pipeline with cleaning, dedup, features, topics, clustering, and validation).
 ```bash
@@ -173,7 +159,7 @@ reports/enhanced_stats.json
 reports/cleaning_log.json
 reports/comparison_table.csv
 ```
-# 6. Dataset Statistics
+# 5. Dataset Statistics
 
 Compute dataset diagnostics:
 ```bash
@@ -190,7 +176,7 @@ Reports:
 - Avg documents per cluster
 - Compression ratio
 
-# 6.1 Dataset Schema Validation
+# 5.1 Dataset Schema Validation
 
 Validate JSON structure before training or evaluation:
 ```bash
@@ -204,84 +190,7 @@ python scripts/data_validator/validate_json_schema.py \
   --data data/enhanced/newssumm_enhanced.json --strict --sample 10
 ```
 
-# 6.2 Pipeline Diagrams
-
-Generate visual diagrams for data preparation pipeline and HPG model architecture.
-
-**Requirements:**
-Graphviz must be installed on your system:
-- **Ubuntu/Debian:** `sudo apt-get install graphviz`
-- **macOS:** `brew install graphviz`
-- **Windows:** Download from https://graphviz.org/download/ or `choco install graphviz`
-
-## Data Preparation Pipeline Diagram
-
-Generates a visual flowchart of the data preparation pipeline stages (loading, cleaning, filtering, deduplication, clustering, validation):
-
-```bash
-python scripts/diagram_generators/data_preparation-diagram.py
-```
-
-Output files:
-```bash
-dataprep_pipeline.ps    # PostScript format
-dataprep_pipeline.jpg   # JPEG format
-```
-
-## HPG Model Architecture Diagram
-
-Generates a visual representation of the Hierarchical Planner-Generator (HPG) model architecture, showing the encoder, planner, fusion, decoder, and loss function components:
-
-```bash
-python scripts/diagram_generators/HPG-diagram.py
-```
-
-Output files:
-```bash
-hpg_architecture.ps     # PostScript format
-hpg_architecture.jpg    # JPEG format
-```
-
-## Summarization Architecture Comparison Diagram
-
-Generates a comprehensive comparison between traditional summarization techniques and the HPG architecture:
-- **Section 1**: Extractive, Abstractive (Seq2Seq), Hierarchical Attention, and Long-Context baselines
-- **Section 2**: Hierarchical Planner-Generator (HPG) improvements and key features
-- **Section 3**: Visual component flow and relative performance
-
-```bash
-python scripts/diagram_generators/comparison-diagram.py
-```
-
-Output files:
-```bash
-summarization_comparison.ps    # PostScript format
-summarization_comparison.jpg   # JPEG format
-```
-
-## Architecture Comparison Table
-
-Generates a detailed feature comparison table across different summarization architectures:
-- Interpretability ratings
-- Multi-document support
-- Context length capabilities
-- Computational cost
-- Planning transparency
-- Performance status
-
-```bash
-python scripts/diagram_generators/comparison_table-diagram.py
-```
-
-Output files:
-```bash
-comparison_table.ps    # PostScript format
-comparison_table.jpg   # JPEG format
-```
-
-**All diagrams are rendered at high DPI (300–1200) for publication-ready output.**
-
-# 7. Experiment Framework (Reproducibility)
+# 6. Experiment Framework (Reproducibility)
 
 All experiments are config-driven via YAML files in: ```bash /configs```
 Each run automatically creates:
@@ -301,7 +210,7 @@ Every experiment snapshot includes:
 - Metrics
 - Runtime metadata
 
-# 8. Baseline Models
+# 7. Baseline Models
 
 a. LED (Longformer Encoder-Decoder)
 ```bash
@@ -327,7 +236,7 @@ python scripts/training/train_baseline.py \
   --config configs/flan_t5_xl.yaml
 ```
 
-# 9. Novel Model "Hierarchical Planner Generator (HPG)"
+# 8. Novel Model "Hierarchical Planner Generator (HPG)"
 HPG separates summarization into these stages:
 
 #### I. SegmentPooler
@@ -357,7 +266,7 @@ HPG separates summarization into these stages:
 python scripts/training/train_HPG.py --data data/newssumm_processed/newssumm_processed.json
 ```
 
-# 10. Evaluation
+# 9. Evaluation
 Evaluate any trained run:
 ```bash
 python scripts/evaluation/run_evaluation_json.py \
@@ -374,7 +283,7 @@ Results stored in:
 ```bash
 results/<run_name>/evaluation.json
 ```
-# 11. Reproducing a Past Experiment
+# 10. Reproducing a Past Experiment
 
 To reproduce any completed run:
 ```bash
@@ -388,7 +297,7 @@ This ensures:
 - Same configuration
 - Deterministic pipeline behavior
 
-# 12. Running on a New System
+# 11. Running on a New System
 Step 1 â€“ Clone Repository
 ```bash
 git clone <repo_url>
@@ -428,7 +337,7 @@ python scripts/evaluation/run_evaluation_json.py --run_dir results/<run_name> --
 python scripts/evaluation/prompted_eval.py --model google/flan-t5-xl --data data/newssumm_processed/newssumm_processed.json --sample 10000 --out_dir results/flan_prompt
 ```
 
-# 13. Experiment Strategy
+# 12. Experiment Strategy
 Heavy GPU Training
 
 - PRIMERA
@@ -445,7 +354,7 @@ Prompt-Based / Light Inference
 - Gemma-2-9B-Instruct (if memory allows)
 - Mixtral-8Ã—7B-Instruct (if memory allows)
 
-# 14. Research Goals
+# 13. Research Goals
 
 This repository supports:
 
